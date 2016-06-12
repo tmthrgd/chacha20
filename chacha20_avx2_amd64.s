@@ -1,0 +1,1127 @@
+// Created by chacha20_avx2.pl - DO NOT EDIT
+// perl chacha20_avx2.pl golang-no-avx chacha20_avx2_amd64.s
+
+// +build amd64,!gccgo,!appengine
+
+#include "textflag.h"
+
+DATA chacha20_consts_avx2<>+0x00(SB)/1, $"e"
+DATA chacha20_consts_avx2<>+0x01(SB)/1, $"x"
+DATA chacha20_consts_avx2<>+0x02(SB)/1, $"p"
+DATA chacha20_consts_avx2<>+0x03(SB)/1, $"a"
+DATA chacha20_consts_avx2<>+0x04(SB)/1, $"n"
+DATA chacha20_consts_avx2<>+0x05(SB)/1, $"d"
+DATA chacha20_consts_avx2<>+0x06(SB)/1, $" "
+DATA chacha20_consts_avx2<>+0x07(SB)/1, $"3"
+DATA chacha20_consts_avx2<>+0x08(SB)/1, $"2"
+DATA chacha20_consts_avx2<>+0x09(SB)/1, $"-"
+DATA chacha20_consts_avx2<>+0x0a(SB)/1, $"b"
+DATA chacha20_consts_avx2<>+0x0b(SB)/1, $"y"
+DATA chacha20_consts_avx2<>+0x0c(SB)/1, $"t"
+DATA chacha20_consts_avx2<>+0x0d(SB)/1, $"e"
+DATA chacha20_consts_avx2<>+0x0e(SB)/1, $" "
+DATA chacha20_consts_avx2<>+0x0f(SB)/1, $"k"
+DATA chacha20_consts_avx2<>+0x10(SB)/1, $"e"
+DATA chacha20_consts_avx2<>+0x11(SB)/1, $"x"
+DATA chacha20_consts_avx2<>+0x12(SB)/1, $"p"
+DATA chacha20_consts_avx2<>+0x13(SB)/1, $"a"
+DATA chacha20_consts_avx2<>+0x14(SB)/1, $"n"
+DATA chacha20_consts_avx2<>+0x15(SB)/1, $"d"
+DATA chacha20_consts_avx2<>+0x16(SB)/1, $" "
+DATA chacha20_consts_avx2<>+0x17(SB)/1, $"3"
+DATA chacha20_consts_avx2<>+0x18(SB)/1, $"2"
+DATA chacha20_consts_avx2<>+0x19(SB)/1, $"-"
+DATA chacha20_consts_avx2<>+0x1a(SB)/1, $"b"
+DATA chacha20_consts_avx2<>+0x1b(SB)/1, $"y"
+DATA chacha20_consts_avx2<>+0x1c(SB)/1, $"t"
+DATA chacha20_consts_avx2<>+0x1d(SB)/1, $"e"
+DATA chacha20_consts_avx2<>+0x1e(SB)/1, $" "
+DATA chacha20_consts_avx2<>+0x1f(SB)/1, $"k"
+GLOBL chacha20_consts_avx2<>(SB), RODATA, $32
+
+DATA rol8_avx2<>+0x00(SB)/1, $3
+DATA rol8_avx2<>+0x01(SB)/1, $0
+DATA rol8_avx2<>+0x02(SB)/1, $1
+DATA rol8_avx2<>+0x03(SB)/1, $2
+DATA rol8_avx2<>+0x04(SB)/1, $7
+DATA rol8_avx2<>+0x05(SB)/1, $4
+DATA rol8_avx2<>+0x06(SB)/1, $5
+DATA rol8_avx2<>+0x07(SB)/1, $6
+DATA rol8_avx2<>+0x08(SB)/1, $11
+DATA rol8_avx2<>+0x09(SB)/1, $8
+DATA rol8_avx2<>+0x0a(SB)/1, $9
+DATA rol8_avx2<>+0x0b(SB)/1, $10
+DATA rol8_avx2<>+0x0c(SB)/1, $15
+DATA rol8_avx2<>+0x0d(SB)/1, $12
+DATA rol8_avx2<>+0x0e(SB)/1, $13
+DATA rol8_avx2<>+0x0f(SB)/1, $14
+DATA rol8_avx2<>+0x10(SB)/1, $3
+DATA rol8_avx2<>+0x11(SB)/1, $0
+DATA rol8_avx2<>+0x12(SB)/1, $1
+DATA rol8_avx2<>+0x13(SB)/1, $2
+DATA rol8_avx2<>+0x14(SB)/1, $7
+DATA rol8_avx2<>+0x15(SB)/1, $4
+DATA rol8_avx2<>+0x16(SB)/1, $5
+DATA rol8_avx2<>+0x17(SB)/1, $6
+DATA rol8_avx2<>+0x18(SB)/1, $11
+DATA rol8_avx2<>+0x19(SB)/1, $8
+DATA rol8_avx2<>+0x1a(SB)/1, $9
+DATA rol8_avx2<>+0x1b(SB)/1, $10
+DATA rol8_avx2<>+0x1c(SB)/1, $16
+DATA rol8_avx2<>+0x1d(SB)/1, $12
+DATA rol8_avx2<>+0x1e(SB)/1, $13
+DATA rol8_avx2<>+0x1f(SB)/1, $14
+GLOBL rol8_avx2<>(SB), RODATA, $32
+
+DATA rol16_avx2<>+0x00(SB)/1, $2
+DATA rol16_avx2<>+0x01(SB)/1, $3
+DATA rol16_avx2<>+0x02(SB)/1, $0
+DATA rol16_avx2<>+0x03(SB)/1, $1
+DATA rol16_avx2<>+0x04(SB)/1, $6
+DATA rol16_avx2<>+0x05(SB)/1, $7
+DATA rol16_avx2<>+0x06(SB)/1, $4
+DATA rol16_avx2<>+0x07(SB)/1, $5
+DATA rol16_avx2<>+0x08(SB)/1, $10
+DATA rol16_avx2<>+0x09(SB)/1, $11
+DATA rol16_avx2<>+0x0a(SB)/1, $8
+DATA rol16_avx2<>+0x0b(SB)/1, $9
+DATA rol16_avx2<>+0x0c(SB)/1, $14
+DATA rol16_avx2<>+0x0d(SB)/1, $15
+DATA rol16_avx2<>+0x0e(SB)/1, $12
+DATA rol16_avx2<>+0x0f(SB)/1, $13
+DATA rol16_avx2<>+0x10(SB)/1, $2
+DATA rol16_avx2<>+0x11(SB)/1, $3
+DATA rol16_avx2<>+0x12(SB)/1, $0
+DATA rol16_avx2<>+0x13(SB)/1, $1
+DATA rol16_avx2<>+0x14(SB)/1, $6
+DATA rol16_avx2<>+0x15(SB)/1, $7
+DATA rol16_avx2<>+0x16(SB)/1, $4
+DATA rol16_avx2<>+0x17(SB)/1, $5
+DATA rol16_avx2<>+0x18(SB)/1, $10
+DATA rol16_avx2<>+0x19(SB)/1, $11
+DATA rol16_avx2<>+0x1a(SB)/1, $8
+DATA rol16_avx2<>+0x1b(SB)/1, $9
+DATA rol16_avx2<>+0x1c(SB)/1, $14
+DATA rol16_avx2<>+0x1d(SB)/1, $15
+DATA rol16_avx2<>+0x1e(SB)/1, $12
+DATA rol16_avx2<>+0x1f(SB)/1, $13
+GLOBL rol16_avx2<>(SB), RODATA, $32
+
+DATA avx2Init<>+0x00(SB)/8, $0x0
+DATA avx2Init<>+0x08(SB)/8, $0x0
+DATA avx2Init<>+0x10(SB)/8, $0x1
+DATA avx2Init<>+0x18(SB)/8, $0x0
+GLOBL avx2Init<>(SB), RODATA, $32
+
+DATA avx2Inc<>+0x00(SB)/8, $0x2
+DATA avx2Inc<>+0x08(SB)/8, $0x0
+DATA avx2Inc<>+0x10(SB)/8, $0x2
+DATA avx2Inc<>+0x18(SB)/8, $0x0
+GLOBL avx2Inc<>(SB), RODATA, $32
+
+TEXT ·chacha_20_core_avx2(SB),$0-48
+	MOVQ	out+0(FP),DI
+	MOVQ	in+8(FP),SI
+	MOVQ	in_len+16(FP),DX
+	MOVQ	key+24(FP),CX
+	MOVQ	nonce+32(FP),R8
+	MOVQ	counter+40(FP),R9
+
+	MOVQ	$chacha20_consts_avx2<>(SB),R11
+	MOVQ	$rol8_avx2<>(SB),R12
+	MOVQ	$rol16_avx2<>(SB),R13
+	MOVQ	$avx2Init<>(SB),R14
+	MOVQ	$avx2Inc<>(SB),R15
+
+	VZEROUPPER
+
+
+	// VBROADCASTI128	16*0(CX),X0
+	BYTE $0xc4; BYTE $0xe2; BYTE $0x7d; BYTE $0x5a; BYTE $0x01
+
+	// VBROADCASTI128	16*1(CX),X1
+	BYTE $0xc4; BYTE $0xe2; BYTE $0x7d; BYTE $0x5a; BYTE $0x49; BYTE $0x10
+
+	// VMOVQ	R9,X2
+	BYTE $0xc4; BYTE $0xc1; BYTE $0xf9; BYTE $0x6e; BYTE $0xd1
+
+	// VPINSRQ	$1,(R8),X2,X2
+	BYTE $0xc4; BYTE $0xc3; BYTE $0xe9; BYTE $0x22; BYTE $0x10; BYTE $0x01
+
+	// VPERM2I128	$0,X2,X2,X2
+	BYTE $0xc4; BYTE $0xe3; BYTE $0x6d; BYTE $0x46; BYTE $0xd2; BYTE $0x00
+
+	// VPADDQ	(R14),X2,X2
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x6d; BYTE $0xd4; BYTE $0x16
+
+
+label2a:
+	CMPQ	DX,$384
+	JB	label2b
+
+	// VMOVDQA	(R11),X4
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x7d; BYTE $0x6f; BYTE $0x23
+
+	// VMOVDQA	(R11),X8
+	BYTE $0xc4; BYTE $0x41; BYTE $0x7d; BYTE $0x6f; BYTE $0x03
+
+	// VMOVDQA	(R11),X12
+	BYTE $0xc4; BYTE $0x41; BYTE $0x7d; BYTE $0x6f; BYTE $0x23
+
+
+	// VMOVDQA	X0,X5
+	BYTE $0xc5; BYTE $0xfd; BYTE $0x6f; BYTE $0xe8
+
+	// VMOVDQA	X0,X9
+	BYTE $0xc5; BYTE $0x7d; BYTE $0x6f; BYTE $0xc8
+
+	// VMOVDQA	X0,X13
+	BYTE $0xc5; BYTE $0x7d; BYTE $0x6f; BYTE $0xe8
+
+
+	// VMOVDQA	X1,X6
+	BYTE $0xc5; BYTE $0xfd; BYTE $0x6f; BYTE $0xf1
+
+	// VMOVDQA	X1,X10
+	BYTE $0xc5; BYTE $0x7d; BYTE $0x6f; BYTE $0xd1
+
+	// VMOVDQA	X1,X14
+	BYTE $0xc5; BYTE $0x7d; BYTE $0x6f; BYTE $0xf1
+
+
+	// VMOVDQA	X2,X7
+	BYTE $0xc5; BYTE $0xfd; BYTE $0x6f; BYTE $0xfa
+
+	// VPADDQ	(R15),X7,X11
+	BYTE $0xc4; BYTE $0x41; BYTE $0x45; BYTE $0xd4; BYTE $0x1f
+
+	// VPADDQ	(R15),X11,X15
+	BYTE $0xc4; BYTE $0x41; BYTE $0x25; BYTE $0xd4; BYTE $0x3f
+
+
+	MOVQ	$10,AX
+
+label1a:
+
+	// VPADDD	X5,X4,X4
+	BYTE $0xc5; BYTE $0xdd; BYTE $0xfe; BYTE $0xe5
+
+	VPXOR	X4,X7,X7
+	// VPSHUFB	32(R13),X7,X7
+	BYTE $0xc4; BYTE $0xc2; BYTE $0x45; BYTE $0x00; BYTE $0x7d; BYTE $0x20
+
+
+	// VPADDD	X7,X6,X6
+	BYTE $0xc5; BYTE $0xcd; BYTE $0xfe; BYTE $0xf7
+
+	VPXOR	X6,X5,X5
+	// VPSLLD	$12,X5,X3
+	BYTE $0xc5; BYTE $0xe5; BYTE $0x72; BYTE $0xf5; BYTE $0x0c
+
+	// VPSRLD	$20,X5,X5
+	BYTE $0xc5; BYTE $0xd5; BYTE $0x72; BYTE $0xd5; BYTE $0x14
+
+	VPXOR	X3,X5,X5
+
+	// VPADDD	X5,X4,X4
+	BYTE $0xc5; BYTE $0xdd; BYTE $0xfe; BYTE $0xe5
+
+	VPXOR	X4,X7,X7
+	// VPSHUFB	0(R12),X7,X7
+	BYTE $0xc4; BYTE $0xc2; BYTE $0x45; BYTE $0x00; BYTE $0x3c; BYTE $0x24
+
+
+	// VPADDD	X7,X6,X6
+	BYTE $0xc5; BYTE $0xcd; BYTE $0xfe; BYTE $0xf7
+
+	VPXOR	X6,X5,X5
+
+	// VPSLLD	$7,X5,X3
+	BYTE $0xc5; BYTE $0xe5; BYTE $0x72; BYTE $0xf5; BYTE $0x07
+
+	// VPSRLD	$25,X5,X5
+	BYTE $0xc5; BYTE $0xd5; BYTE $0x72; BYTE $0xd5; BYTE $0x19
+
+	VPXOR	X3,X5,X5
+
+	// VPADDD	X9,X8,X8
+	BYTE $0xc4; BYTE $0x41; BYTE $0x3d; BYTE $0xfe; BYTE $0xc1
+
+	VPXOR	X8,X11,X11
+	// VPSHUFB	32(R13),X11,X11
+	BYTE $0xc4; BYTE $0x42; BYTE $0x25; BYTE $0x00; BYTE $0x5d; BYTE $0x20
+
+
+	// VPADDD	X11,X10,X10
+	BYTE $0xc4; BYTE $0x41; BYTE $0x2d; BYTE $0xfe; BYTE $0xd3
+
+	VPXOR	X10,X9,X9
+	// VPSLLD	$12,X9,X3
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x65; BYTE $0x72; BYTE $0xf1; BYTE $0x0c
+
+	// VPSRLD	$20,X9,X9
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x35; BYTE $0x72; BYTE $0xd1; BYTE $0x14
+
+	VPXOR	X3,X9,X9
+
+	// VPADDD	X9,X8,X8
+	BYTE $0xc4; BYTE $0x41; BYTE $0x3d; BYTE $0xfe; BYTE $0xc1
+
+	VPXOR	X8,X11,X11
+	// VPSHUFB	0(R12),X11,X11
+	BYTE $0xc4; BYTE $0x42; BYTE $0x25; BYTE $0x00; BYTE $0x1c; BYTE $0x24
+
+
+	// VPADDD	X11,X10,X10
+	BYTE $0xc4; BYTE $0x41; BYTE $0x2d; BYTE $0xfe; BYTE $0xd3
+
+	VPXOR	X10,X9,X9
+
+	// VPSLLD	$7,X9,X3
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x65; BYTE $0x72; BYTE $0xf1; BYTE $0x07
+
+	// VPSRLD	$25,X9,X9
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x35; BYTE $0x72; BYTE $0xd1; BYTE $0x19
+
+	VPXOR	X3,X9,X9
+
+	// VPADDD	X13,X12,X12
+	BYTE $0xc4; BYTE $0x41; BYTE $0x1d; BYTE $0xfe; BYTE $0xe5
+
+	VPXOR	X12,X15,X15
+	// VPSHUFB	32(R13),X15,X15
+	BYTE $0xc4; BYTE $0x42; BYTE $0x05; BYTE $0x00; BYTE $0x7d; BYTE $0x20
+
+
+	// VPADDD	X15,X14,X14
+	BYTE $0xc4; BYTE $0x41; BYTE $0x0d; BYTE $0xfe; BYTE $0xf7
+
+	VPXOR	X14,X13,X13
+	// VPSLLD	$12,X13,X3
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x65; BYTE $0x72; BYTE $0xf5; BYTE $0x0c
+
+	// VPSRLD	$20,X13,X13
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x15; BYTE $0x72; BYTE $0xd5; BYTE $0x14
+
+	VPXOR	X3,X13,X13
+
+	// VPADDD	X13,X12,X12
+	BYTE $0xc4; BYTE $0x41; BYTE $0x1d; BYTE $0xfe; BYTE $0xe5
+
+	VPXOR	X12,X15,X15
+	// VPSHUFB	0(R12),X15,X15
+	BYTE $0xc4; BYTE $0x42; BYTE $0x05; BYTE $0x00; BYTE $0x3c; BYTE $0x24
+
+
+	// VPADDD	X15,X14,X14
+	BYTE $0xc4; BYTE $0x41; BYTE $0x0d; BYTE $0xfe; BYTE $0xf7
+
+	VPXOR	X14,X13,X13
+
+	// VPSLLD	$7,X13,X3
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x65; BYTE $0x72; BYTE $0xf5; BYTE $0x07
+
+	// VPSRLD	$25,X13,X13
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x15; BYTE $0x72; BYTE $0xd5; BYTE $0x19
+
+	VPXOR	X3,X13,X13
+	// VPALIGNR	$4,X5,X5,X5
+	BYTE $0xc4; BYTE $0xe3; BYTE $0x55; BYTE $0x0f; BYTE $0xed; BYTE $0x04
+
+	// VPALIGNR	$8,X6,X6,X6
+	BYTE $0xc4; BYTE $0xe3; BYTE $0x4d; BYTE $0x0f; BYTE $0xf6; BYTE $0x08
+
+	// VPALIGNR	$12,X7,X7,X7
+	BYTE $0xc4; BYTE $0xe3; BYTE $0x45; BYTE $0x0f; BYTE $0xff; BYTE $0x0c
+
+	// VPALIGNR	$4,X9,X9,X9
+	BYTE $0xc4; BYTE $0x43; BYTE $0x35; BYTE $0x0f; BYTE $0xc9; BYTE $0x04
+
+	// VPALIGNR	$8,X10,X10,X10
+	BYTE $0xc4; BYTE $0x43; BYTE $0x2d; BYTE $0x0f; BYTE $0xd2; BYTE $0x08
+
+	// VPALIGNR	$12,X11,X11,X11
+	BYTE $0xc4; BYTE $0x43; BYTE $0x25; BYTE $0x0f; BYTE $0xdb; BYTE $0x0c
+
+	// VPALIGNR	$4,X13,X13,X13
+	BYTE $0xc4; BYTE $0x43; BYTE $0x15; BYTE $0x0f; BYTE $0xed; BYTE $0x04
+
+	// VPALIGNR	$8,X14,X14,X14
+	BYTE $0xc4; BYTE $0x43; BYTE $0x0d; BYTE $0x0f; BYTE $0xf6; BYTE $0x08
+
+	// VPALIGNR	$12,X15,X15,X15
+	BYTE $0xc4; BYTE $0x43; BYTE $0x05; BYTE $0x0f; BYTE $0xff; BYTE $0x0c
+
+
+	// VPADDD	X5,X4,X4
+	BYTE $0xc5; BYTE $0xdd; BYTE $0xfe; BYTE $0xe5
+
+	VPXOR	X4,X7,X7
+	// VPSHUFB	32(R13),X7,X7
+	BYTE $0xc4; BYTE $0xc2; BYTE $0x45; BYTE $0x00; BYTE $0x7d; BYTE $0x20
+
+
+	// VPADDD	X7,X6,X6
+	BYTE $0xc5; BYTE $0xcd; BYTE $0xfe; BYTE $0xf7
+
+	VPXOR	X6,X5,X5
+	// VPSLLD	$12,X5,X3
+	BYTE $0xc5; BYTE $0xe5; BYTE $0x72; BYTE $0xf5; BYTE $0x0c
+
+	// VPSRLD	$20,X5,X5
+	BYTE $0xc5; BYTE $0xd5; BYTE $0x72; BYTE $0xd5; BYTE $0x14
+
+	VPXOR	X3,X5,X5
+
+	// VPADDD	X5,X4,X4
+	BYTE $0xc5; BYTE $0xdd; BYTE $0xfe; BYTE $0xe5
+
+	VPXOR	X4,X7,X7
+	// VPSHUFB	0(R12),X7,X7
+	BYTE $0xc4; BYTE $0xc2; BYTE $0x45; BYTE $0x00; BYTE $0x3c; BYTE $0x24
+
+
+	// VPADDD	X7,X6,X6
+	BYTE $0xc5; BYTE $0xcd; BYTE $0xfe; BYTE $0xf7
+
+	VPXOR	X6,X5,X5
+
+	// VPSLLD	$7,X5,X3
+	BYTE $0xc5; BYTE $0xe5; BYTE $0x72; BYTE $0xf5; BYTE $0x07
+
+	// VPSRLD	$25,X5,X5
+	BYTE $0xc5; BYTE $0xd5; BYTE $0x72; BYTE $0xd5; BYTE $0x19
+
+	VPXOR	X3,X5,X5
+
+	// VPADDD	X9,X8,X8
+	BYTE $0xc4; BYTE $0x41; BYTE $0x3d; BYTE $0xfe; BYTE $0xc1
+
+	VPXOR	X8,X11,X11
+	// VPSHUFB	32(R13),X11,X11
+	BYTE $0xc4; BYTE $0x42; BYTE $0x25; BYTE $0x00; BYTE $0x5d; BYTE $0x20
+
+
+	// VPADDD	X11,X10,X10
+	BYTE $0xc4; BYTE $0x41; BYTE $0x2d; BYTE $0xfe; BYTE $0xd3
+
+	VPXOR	X10,X9,X9
+	// VPSLLD	$12,X9,X3
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x65; BYTE $0x72; BYTE $0xf1; BYTE $0x0c
+
+	// VPSRLD	$20,X9,X9
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x35; BYTE $0x72; BYTE $0xd1; BYTE $0x14
+
+	VPXOR	X3,X9,X9
+
+	// VPADDD	X9,X8,X8
+	BYTE $0xc4; BYTE $0x41; BYTE $0x3d; BYTE $0xfe; BYTE $0xc1
+
+	VPXOR	X8,X11,X11
+	// VPSHUFB	0(R12),X11,X11
+	BYTE $0xc4; BYTE $0x42; BYTE $0x25; BYTE $0x00; BYTE $0x1c; BYTE $0x24
+
+
+	// VPADDD	X11,X10,X10
+	BYTE $0xc4; BYTE $0x41; BYTE $0x2d; BYTE $0xfe; BYTE $0xd3
+
+	VPXOR	X10,X9,X9
+
+	// VPSLLD	$7,X9,X3
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x65; BYTE $0x72; BYTE $0xf1; BYTE $0x07
+
+	// VPSRLD	$25,X9,X9
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x35; BYTE $0x72; BYTE $0xd1; BYTE $0x19
+
+	VPXOR	X3,X9,X9
+
+	// VPADDD	X13,X12,X12
+	BYTE $0xc4; BYTE $0x41; BYTE $0x1d; BYTE $0xfe; BYTE $0xe5
+
+	VPXOR	X12,X15,X15
+	// VPSHUFB	32(R13),X15,X15
+	BYTE $0xc4; BYTE $0x42; BYTE $0x05; BYTE $0x00; BYTE $0x7d; BYTE $0x20
+
+
+	// VPADDD	X15,X14,X14
+	BYTE $0xc4; BYTE $0x41; BYTE $0x0d; BYTE $0xfe; BYTE $0xf7
+
+	VPXOR	X14,X13,X13
+	// VPSLLD	$12,X13,X3
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x65; BYTE $0x72; BYTE $0xf5; BYTE $0x0c
+
+	// VPSRLD	$20,X13,X13
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x15; BYTE $0x72; BYTE $0xd5; BYTE $0x14
+
+	VPXOR	X3,X13,X13
+
+	// VPADDD	X13,X12,X12
+	BYTE $0xc4; BYTE $0x41; BYTE $0x1d; BYTE $0xfe; BYTE $0xe5
+
+	VPXOR	X12,X15,X15
+	// VPSHUFB	0(R12),X15,X15
+	BYTE $0xc4; BYTE $0x42; BYTE $0x05; BYTE $0x00; BYTE $0x3c; BYTE $0x24
+
+
+	// VPADDD	X15,X14,X14
+	BYTE $0xc4; BYTE $0x41; BYTE $0x0d; BYTE $0xfe; BYTE $0xf7
+
+	VPXOR	X14,X13,X13
+
+	// VPSLLD	$7,X13,X3
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x65; BYTE $0x72; BYTE $0xf5; BYTE $0x07
+
+	// VPSRLD	$25,X13,X13
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x15; BYTE $0x72; BYTE $0xd5; BYTE $0x19
+
+	VPXOR	X3,X13,X13
+	// VPALIGNR	$12,X5,X5,X5
+	BYTE $0xc4; BYTE $0xe3; BYTE $0x55; BYTE $0x0f; BYTE $0xed; BYTE $0x0c
+
+	// VPALIGNR	$8,X6,X6,X6
+	BYTE $0xc4; BYTE $0xe3; BYTE $0x4d; BYTE $0x0f; BYTE $0xf6; BYTE $0x08
+
+	// VPALIGNR	$4,X7,X7,X7
+	BYTE $0xc4; BYTE $0xe3; BYTE $0x45; BYTE $0x0f; BYTE $0xff; BYTE $0x04
+
+	// VPALIGNR	$12,X9,X9,X9
+	BYTE $0xc4; BYTE $0x43; BYTE $0x35; BYTE $0x0f; BYTE $0xc9; BYTE $0x0c
+
+	// VPALIGNR	$8,X10,X10,X10
+	BYTE $0xc4; BYTE $0x43; BYTE $0x2d; BYTE $0x0f; BYTE $0xd2; BYTE $0x08
+
+	// VPALIGNR	$4,X11,X11,X11
+	BYTE $0xc4; BYTE $0x43; BYTE $0x25; BYTE $0x0f; BYTE $0xdb; BYTE $0x04
+
+	// VPALIGNR	$12,X13,X13,X13
+	BYTE $0xc4; BYTE $0x43; BYTE $0x15; BYTE $0x0f; BYTE $0xed; BYTE $0x0c
+
+	// VPALIGNR	$8,X14,X14,X14
+	BYTE $0xc4; BYTE $0x43; BYTE $0x0d; BYTE $0x0f; BYTE $0xf6; BYTE $0x08
+
+	// VPALIGNR	$4,X15,X15,X15
+	BYTE $0xc4; BYTE $0x43; BYTE $0x05; BYTE $0x0f; BYTE $0xff; BYTE $0x04
+
+
+	DECQ	AX
+
+	JNZ	label1a
+
+	// VPADDD	(R11),X4,X4
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x5d; BYTE $0xfe; BYTE $0x23
+
+	// VPADDD	(R11),X8,X8
+	BYTE $0xc4; BYTE $0x41; BYTE $0x3d; BYTE $0xfe; BYTE $0x03
+
+	// VPADDD	(R11),X12,X12
+	BYTE $0xc4; BYTE $0x41; BYTE $0x1d; BYTE $0xfe; BYTE $0x23
+
+
+	// VPADDD	X0,X5,X5
+	BYTE $0xc5; BYTE $0xd5; BYTE $0xfe; BYTE $0xe8
+
+	// VPADDD	X0,X9,X9
+	BYTE $0xc5; BYTE $0x35; BYTE $0xfe; BYTE $0xc8
+
+	// VPADDD	X0,X13,X13
+	BYTE $0xc5; BYTE $0x15; BYTE $0xfe; BYTE $0xe8
+
+
+	// VPADDD	X1,X6,X6
+	BYTE $0xc5; BYTE $0xcd; BYTE $0xfe; BYTE $0xf1
+
+	// VPADDD	X1,X10,X10
+	BYTE $0xc5; BYTE $0x2d; BYTE $0xfe; BYTE $0xd1
+
+	// VPADDD	X1,X14,X14
+	BYTE $0xc5; BYTE $0x0d; BYTE $0xfe; BYTE $0xf1
+
+
+	// VPADDD	X2,X7,X7
+	BYTE $0xc5; BYTE $0xc5; BYTE $0xfe; BYTE $0xfa
+
+	// VPADDQ	(R15),X2,X2
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x6d; BYTE $0xd4; BYTE $0x17
+
+	// VPADDD	X2,X11,X11
+	BYTE $0xc5; BYTE $0x25; BYTE $0xfe; BYTE $0xda
+
+	// VPADDQ	(R15),X2,X2
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x6d; BYTE $0xd4; BYTE $0x17
+
+	// VPADDD	X2,X15,X15
+	BYTE $0xc5; BYTE $0x05; BYTE $0xfe; BYTE $0xfa
+
+	// VPADDQ	(R15),X2,X2
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x6d; BYTE $0xd4; BYTE $0x17
+
+
+	// VPERM2I128	$2,X4,X5,X3
+	BYTE $0xc4; BYTE $0xe3; BYTE $0x55; BYTE $0x46; BYTE $0xdc; BYTE $0x02
+
+	VPXOR	32*0(SI),X3,X3
+	VMOVDQU	X3,32*0(DI)
+	// VPERM2I128	$2,X6,X7,X3
+	BYTE $0xc4; BYTE $0xe3; BYTE $0x45; BYTE $0x46; BYTE $0xde; BYTE $0x02
+
+	VPXOR	32*1(SI),X3,X3
+	VMOVDQU	X3,32*1(DI)
+	// VPERM2I128	$19,X4,X5,X3
+	BYTE $0xc4; BYTE $0xe3; BYTE $0x55; BYTE $0x46; BYTE $0xdc; BYTE $0x13
+
+	VPXOR	32*2(SI),X3,X3
+	VMOVDQU	X3,32*2(DI)
+	// VPERM2I128	$19,X6,X7,X3
+	BYTE $0xc4; BYTE $0xe3; BYTE $0x45; BYTE $0x46; BYTE $0xde; BYTE $0x13
+
+	VPXOR	32*3(SI),X3,X3
+	VMOVDQU	X3,32*3(DI)
+
+	// VPERM2I128	$2,X8,X9,X4
+	BYTE $0xc4; BYTE $0xc3; BYTE $0x35; BYTE $0x46; BYTE $0xe0; BYTE $0x02
+
+	// VPERM2I128	$2,X10,X11,X5
+	BYTE $0xc4; BYTE $0xc3; BYTE $0x25; BYTE $0x46; BYTE $0xea; BYTE $0x02
+
+	// VPERM2I128	$19,X8,X9,X6
+	BYTE $0xc4; BYTE $0xc3; BYTE $0x35; BYTE $0x46; BYTE $0xf0; BYTE $0x13
+
+	// VPERM2I128	$19,X10,X11,X7
+	BYTE $0xc4; BYTE $0xc3; BYTE $0x25; BYTE $0x46; BYTE $0xfa; BYTE $0x13
+
+
+	VPXOR	32*4(SI),X4,X4
+	VPXOR	32*5(SI),X5,X5
+	VPXOR	32*6(SI),X6,X6
+	VPXOR	32*7(SI),X7,X7
+
+	VMOVDQU	X4,32*4(DI)
+	VMOVDQU	X5,32*5(DI)
+	VMOVDQU	X6,32*6(DI)
+	VMOVDQU	X7,32*7(DI)
+
+	// VPERM2I128	$2,X12,X13,X4
+	BYTE $0xc4; BYTE $0xc3; BYTE $0x15; BYTE $0x46; BYTE $0xe4; BYTE $0x02
+
+	// VPERM2I128	$2,X14,X15,X5
+	BYTE $0xc4; BYTE $0xc3; BYTE $0x05; BYTE $0x46; BYTE $0xee; BYTE $0x02
+
+	// VPERM2I128	$19,X12,X13,X6
+	BYTE $0xc4; BYTE $0xc3; BYTE $0x15; BYTE $0x46; BYTE $0xf4; BYTE $0x13
+
+	// VPERM2I128	$19,X14,X15,X7
+	BYTE $0xc4; BYTE $0xc3; BYTE $0x05; BYTE $0x46; BYTE $0xfe; BYTE $0x13
+
+
+	VPXOR	32*8(SI),X4,X4
+	VPXOR	32*9(SI),X5,X5
+	VPXOR	32*10(SI),X6,X6
+	VPXOR	32*11(SI),X7,X7
+
+	VMOVDQU	X4,32*8(DI)
+	VMOVDQU	X5,32*9(DI)
+	VMOVDQU	X6,32*10(DI)
+	VMOVDQU	X7,32*11(DI)
+
+	LEAQ	64*6(SI),SI
+	LEAQ	64*6(DI),DI
+	SUBQ	$384,DX
+
+	JMP	label2a
+
+label2b:
+	CMPQ	DX,$256
+	JB	label2c
+
+	// VMOVDQA	(R11),X4
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x7d; BYTE $0x6f; BYTE $0x23
+
+	// VMOVDQA	(R11),X8
+	BYTE $0xc4; BYTE $0x41; BYTE $0x7d; BYTE $0x6f; BYTE $0x03
+
+	// VMOVDQA	X0,X5
+	BYTE $0xc5; BYTE $0xfd; BYTE $0x6f; BYTE $0xe8
+
+	// VMOVDQA	X0,X9
+	BYTE $0xc5; BYTE $0x7d; BYTE $0x6f; BYTE $0xc8
+
+	// VMOVDQA	X1,X6
+	BYTE $0xc5; BYTE $0xfd; BYTE $0x6f; BYTE $0xf1
+
+	// VMOVDQA	X1,X10
+	BYTE $0xc5; BYTE $0x7d; BYTE $0x6f; BYTE $0xd1
+
+	// VMOVDQA	X1,X14
+	BYTE $0xc5; BYTE $0x7d; BYTE $0x6f; BYTE $0xf1
+
+	// VMOVDQA	X2,X7
+	BYTE $0xc5; BYTE $0xfd; BYTE $0x6f; BYTE $0xfa
+
+	// VPADDQ	(R15),X7,X11
+	BYTE $0xc4; BYTE $0x41; BYTE $0x45; BYTE $0xd4; BYTE $0x1f
+
+
+	MOVQ	$10,AX
+
+label1b:
+
+	// VPADDD	X5,X4,X4
+	BYTE $0xc5; BYTE $0xdd; BYTE $0xfe; BYTE $0xe5
+
+	VPXOR	X4,X7,X7
+	// VPSHUFB	32(R13),X7,X7
+	BYTE $0xc4; BYTE $0xc2; BYTE $0x45; BYTE $0x00; BYTE $0x7d; BYTE $0x20
+
+
+	// VPADDD	X7,X6,X6
+	BYTE $0xc5; BYTE $0xcd; BYTE $0xfe; BYTE $0xf7
+
+	VPXOR	X6,X5,X5
+	// VPSLLD	$12,X5,X3
+	BYTE $0xc5; BYTE $0xe5; BYTE $0x72; BYTE $0xf5; BYTE $0x0c
+
+	// VPSRLD	$20,X5,X5
+	BYTE $0xc5; BYTE $0xd5; BYTE $0x72; BYTE $0xd5; BYTE $0x14
+
+	VPXOR	X3,X5,X5
+
+	// VPADDD	X5,X4,X4
+	BYTE $0xc5; BYTE $0xdd; BYTE $0xfe; BYTE $0xe5
+
+	VPXOR	X4,X7,X7
+	// VPSHUFB	0(R12),X7,X7
+	BYTE $0xc4; BYTE $0xc2; BYTE $0x45; BYTE $0x00; BYTE $0x3c; BYTE $0x24
+
+
+	// VPADDD	X7,X6,X6
+	BYTE $0xc5; BYTE $0xcd; BYTE $0xfe; BYTE $0xf7
+
+	VPXOR	X6,X5,X5
+
+	// VPSLLD	$7,X5,X3
+	BYTE $0xc5; BYTE $0xe5; BYTE $0x72; BYTE $0xf5; BYTE $0x07
+
+	// VPSRLD	$25,X5,X5
+	BYTE $0xc5; BYTE $0xd5; BYTE $0x72; BYTE $0xd5; BYTE $0x19
+
+	VPXOR	X3,X5,X5
+
+	// VPADDD	X9,X8,X8
+	BYTE $0xc4; BYTE $0x41; BYTE $0x3d; BYTE $0xfe; BYTE $0xc1
+
+	VPXOR	X8,X11,X11
+	// VPSHUFB	32(R13),X11,X11
+	BYTE $0xc4; BYTE $0x42; BYTE $0x25; BYTE $0x00; BYTE $0x5d; BYTE $0x20
+
+
+	// VPADDD	X11,X10,X10
+	BYTE $0xc4; BYTE $0x41; BYTE $0x2d; BYTE $0xfe; BYTE $0xd3
+
+	VPXOR	X10,X9,X9
+	// VPSLLD	$12,X9,X3
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x65; BYTE $0x72; BYTE $0xf1; BYTE $0x0c
+
+	// VPSRLD	$20,X9,X9
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x35; BYTE $0x72; BYTE $0xd1; BYTE $0x14
+
+	VPXOR	X3,X9,X9
+
+	// VPADDD	X9,X8,X8
+	BYTE $0xc4; BYTE $0x41; BYTE $0x3d; BYTE $0xfe; BYTE $0xc1
+
+	VPXOR	X8,X11,X11
+	// VPSHUFB	0(R12),X11,X11
+	BYTE $0xc4; BYTE $0x42; BYTE $0x25; BYTE $0x00; BYTE $0x1c; BYTE $0x24
+
+
+	// VPADDD	X11,X10,X10
+	BYTE $0xc4; BYTE $0x41; BYTE $0x2d; BYTE $0xfe; BYTE $0xd3
+
+	VPXOR	X10,X9,X9
+
+	// VPSLLD	$7,X9,X3
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x65; BYTE $0x72; BYTE $0xf1; BYTE $0x07
+
+	// VPSRLD	$25,X9,X9
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x35; BYTE $0x72; BYTE $0xd1; BYTE $0x19
+
+	VPXOR	X3,X9,X9
+	// VPALIGNR	$4,X5,X5,X5
+	BYTE $0xc4; BYTE $0xe3; BYTE $0x55; BYTE $0x0f; BYTE $0xed; BYTE $0x04
+
+	// VPALIGNR	$8,X6,X6,X6
+	BYTE $0xc4; BYTE $0xe3; BYTE $0x4d; BYTE $0x0f; BYTE $0xf6; BYTE $0x08
+
+	// VPALIGNR	$12,X7,X7,X7
+	BYTE $0xc4; BYTE $0xe3; BYTE $0x45; BYTE $0x0f; BYTE $0xff; BYTE $0x0c
+
+	// VPALIGNR	$4,X9,X9,X9
+	BYTE $0xc4; BYTE $0x43; BYTE $0x35; BYTE $0x0f; BYTE $0xc9; BYTE $0x04
+
+	// VPALIGNR	$8,X10,X10,X10
+	BYTE $0xc4; BYTE $0x43; BYTE $0x2d; BYTE $0x0f; BYTE $0xd2; BYTE $0x08
+
+	// VPALIGNR	$12,X11,X11,X11
+	BYTE $0xc4; BYTE $0x43; BYTE $0x25; BYTE $0x0f; BYTE $0xdb; BYTE $0x0c
+
+
+	// VPADDD	X5,X4,X4
+	BYTE $0xc5; BYTE $0xdd; BYTE $0xfe; BYTE $0xe5
+
+	VPXOR	X4,X7,X7
+	// VPSHUFB	32(R13),X7,X7
+	BYTE $0xc4; BYTE $0xc2; BYTE $0x45; BYTE $0x00; BYTE $0x7d; BYTE $0x20
+
+
+	// VPADDD	X7,X6,X6
+	BYTE $0xc5; BYTE $0xcd; BYTE $0xfe; BYTE $0xf7
+
+	VPXOR	X6,X5,X5
+	// VPSLLD	$12,X5,X3
+	BYTE $0xc5; BYTE $0xe5; BYTE $0x72; BYTE $0xf5; BYTE $0x0c
+
+	// VPSRLD	$20,X5,X5
+	BYTE $0xc5; BYTE $0xd5; BYTE $0x72; BYTE $0xd5; BYTE $0x14
+
+	VPXOR	X3,X5,X5
+
+	// VPADDD	X5,X4,X4
+	BYTE $0xc5; BYTE $0xdd; BYTE $0xfe; BYTE $0xe5
+
+	VPXOR	X4,X7,X7
+	// VPSHUFB	0(R12),X7,X7
+	BYTE $0xc4; BYTE $0xc2; BYTE $0x45; BYTE $0x00; BYTE $0x3c; BYTE $0x24
+
+
+	// VPADDD	X7,X6,X6
+	BYTE $0xc5; BYTE $0xcd; BYTE $0xfe; BYTE $0xf7
+
+	VPXOR	X6,X5,X5
+
+	// VPSLLD	$7,X5,X3
+	BYTE $0xc5; BYTE $0xe5; BYTE $0x72; BYTE $0xf5; BYTE $0x07
+
+	// VPSRLD	$25,X5,X5
+	BYTE $0xc5; BYTE $0xd5; BYTE $0x72; BYTE $0xd5; BYTE $0x19
+
+	VPXOR	X3,X5,X5
+
+	// VPADDD	X9,X8,X8
+	BYTE $0xc4; BYTE $0x41; BYTE $0x3d; BYTE $0xfe; BYTE $0xc1
+
+	VPXOR	X8,X11,X11
+	// VPSHUFB	32(R13),X11,X11
+	BYTE $0xc4; BYTE $0x42; BYTE $0x25; BYTE $0x00; BYTE $0x5d; BYTE $0x20
+
+
+	// VPADDD	X11,X10,X10
+	BYTE $0xc4; BYTE $0x41; BYTE $0x2d; BYTE $0xfe; BYTE $0xd3
+
+	VPXOR	X10,X9,X9
+	// VPSLLD	$12,X9,X3
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x65; BYTE $0x72; BYTE $0xf1; BYTE $0x0c
+
+	// VPSRLD	$20,X9,X9
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x35; BYTE $0x72; BYTE $0xd1; BYTE $0x14
+
+	VPXOR	X3,X9,X9
+
+	// VPADDD	X9,X8,X8
+	BYTE $0xc4; BYTE $0x41; BYTE $0x3d; BYTE $0xfe; BYTE $0xc1
+
+	VPXOR	X8,X11,X11
+	// VPSHUFB	0(R12),X11,X11
+	BYTE $0xc4; BYTE $0x42; BYTE $0x25; BYTE $0x00; BYTE $0x1c; BYTE $0x24
+
+
+	// VPADDD	X11,X10,X10
+	BYTE $0xc4; BYTE $0x41; BYTE $0x2d; BYTE $0xfe; BYTE $0xd3
+
+	VPXOR	X10,X9,X9
+
+	// VPSLLD	$7,X9,X3
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x65; BYTE $0x72; BYTE $0xf1; BYTE $0x07
+
+	// VPSRLD	$25,X9,X9
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x35; BYTE $0x72; BYTE $0xd1; BYTE $0x19
+
+	VPXOR	X3,X9,X9
+	// VPALIGNR	$12,X5,X5,X5
+	BYTE $0xc4; BYTE $0xe3; BYTE $0x55; BYTE $0x0f; BYTE $0xed; BYTE $0x0c
+
+	// VPALIGNR	$8,X6,X6,X6
+	BYTE $0xc4; BYTE $0xe3; BYTE $0x4d; BYTE $0x0f; BYTE $0xf6; BYTE $0x08
+
+	// VPALIGNR	$4,X7,X7,X7
+	BYTE $0xc4; BYTE $0xe3; BYTE $0x45; BYTE $0x0f; BYTE $0xff; BYTE $0x04
+
+	// VPALIGNR	$12,X9,X9,X9
+	BYTE $0xc4; BYTE $0x43; BYTE $0x35; BYTE $0x0f; BYTE $0xc9; BYTE $0x0c
+
+	// VPALIGNR	$8,X10,X10,X10
+	BYTE $0xc4; BYTE $0x43; BYTE $0x2d; BYTE $0x0f; BYTE $0xd2; BYTE $0x08
+
+	// VPALIGNR	$4,X11,X11,X11
+	BYTE $0xc4; BYTE $0x43; BYTE $0x25; BYTE $0x0f; BYTE $0xdb; BYTE $0x04
+
+
+	DECQ	AX
+
+	JNZ	label1b
+
+	// VPADDD	(R11),X4,X4
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x5d; BYTE $0xfe; BYTE $0x23
+
+	// VPADDD	(R11),X8,X8
+	BYTE $0xc4; BYTE $0x41; BYTE $0x3d; BYTE $0xfe; BYTE $0x03
+
+
+	// VPADDD	X0,X5,X5
+	BYTE $0xc5; BYTE $0xd5; BYTE $0xfe; BYTE $0xe8
+
+	// VPADDD	X0,X9,X9
+	BYTE $0xc5; BYTE $0x35; BYTE $0xfe; BYTE $0xc8
+
+
+	// VPADDD	X1,X6,X6
+	BYTE $0xc5; BYTE $0xcd; BYTE $0xfe; BYTE $0xf1
+
+	// VPADDD	X1,X10,X10
+	BYTE $0xc5; BYTE $0x2d; BYTE $0xfe; BYTE $0xd1
+
+
+	// VPADDD	X2,X7,X7
+	BYTE $0xc5; BYTE $0xc5; BYTE $0xfe; BYTE $0xfa
+
+	// VPADDQ	(R15),X2,X2
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x6d; BYTE $0xd4; BYTE $0x17
+
+	// VPADDD	X2,X11,X11
+	BYTE $0xc5; BYTE $0x25; BYTE $0xfe; BYTE $0xda
+
+	// VPADDQ	(R15),X2,X2
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x6d; BYTE $0xd4; BYTE $0x17
+
+
+	// VPERM2I128	$2,X4,X5,X12
+	BYTE $0xc4; BYTE $0x63; BYTE $0x55; BYTE $0x46; BYTE $0xe4; BYTE $0x02
+
+	// VPERM2I128	$2,X6,X7,X13
+	BYTE $0xc4; BYTE $0x63; BYTE $0x45; BYTE $0x46; BYTE $0xee; BYTE $0x02
+
+	// VPERM2I128	$19,X4,X5,X14
+	BYTE $0xc4; BYTE $0x63; BYTE $0x55; BYTE $0x46; BYTE $0xf4; BYTE $0x13
+
+	// VPERM2I128	$19,X6,X7,X15
+	BYTE $0xc4; BYTE $0x63; BYTE $0x45; BYTE $0x46; BYTE $0xfe; BYTE $0x13
+
+
+	VPXOR	32*0(SI),X12,X12
+	VPXOR	32*1(SI),X13,X13
+	VPXOR	32*2(SI),X14,X14
+	VPXOR	32*3(SI),X15,X15
+
+	VMOVDQU	X12,32*0(DI)
+	VMOVDQU	X13,32*1(DI)
+	VMOVDQU	X14,32*2(DI)
+	VMOVDQU	X15,32*3(DI)
+
+	// VPERM2I128	$2,X8,X9,X4
+	BYTE $0xc4; BYTE $0xc3; BYTE $0x35; BYTE $0x46; BYTE $0xe0; BYTE $0x02
+
+	// VPERM2I128	$2,X10,X11,X5
+	BYTE $0xc4; BYTE $0xc3; BYTE $0x25; BYTE $0x46; BYTE $0xea; BYTE $0x02
+
+	// VPERM2I128	$19,X8,X9,X6
+	BYTE $0xc4; BYTE $0xc3; BYTE $0x35; BYTE $0x46; BYTE $0xf0; BYTE $0x13
+
+	// VPERM2I128	$19,X10,X11,X7
+	BYTE $0xc4; BYTE $0xc3; BYTE $0x25; BYTE $0x46; BYTE $0xfa; BYTE $0x13
+
+
+	VPXOR	32*4(SI),X4,X4
+	VPXOR	32*5(SI),X5,X5
+	VPXOR	32*6(SI),X6,X6
+	VPXOR	32*7(SI),X7,X7
+
+	VMOVDQU	X4,32*4(DI)
+	VMOVDQU	X5,32*5(DI)
+	VMOVDQU	X6,32*6(DI)
+	VMOVDQU	X7,32*7(DI)
+
+	LEAQ	64*4(SI),SI
+	LEAQ	64*4(DI),DI
+	SUBQ	$256,DX
+
+	JMP	label2b
+label2c:
+	CMPQ	DX,$128
+	JB	label2d
+
+	// VMOVDQA	(R11),X4
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x7d; BYTE $0x6f; BYTE $0x23
+
+	// VMOVDQA	X0,X5
+	BYTE $0xc5; BYTE $0xfd; BYTE $0x6f; BYTE $0xe8
+
+	// VMOVDQA	X1,X6
+	BYTE $0xc5; BYTE $0xfd; BYTE $0x6f; BYTE $0xf1
+
+	// VMOVDQA	X2,X7
+	BYTE $0xc5; BYTE $0xfd; BYTE $0x6f; BYTE $0xfa
+
+
+	MOVQ	$10,AX
+
+label1c:
+
+	// VPADDD	X5,X4,X4
+	BYTE $0xc5; BYTE $0xdd; BYTE $0xfe; BYTE $0xe5
+
+	VPXOR	X4,X7,X7
+	// VPSHUFB	32(R13),X7,X7
+	BYTE $0xc4; BYTE $0xc2; BYTE $0x45; BYTE $0x00; BYTE $0x7d; BYTE $0x20
+
+
+	// VPADDD	X7,X6,X6
+	BYTE $0xc5; BYTE $0xcd; BYTE $0xfe; BYTE $0xf7
+
+	VPXOR	X6,X5,X5
+	// VPSLLD	$12,X5,X3
+	BYTE $0xc5; BYTE $0xe5; BYTE $0x72; BYTE $0xf5; BYTE $0x0c
+
+	// VPSRLD	$20,X5,X5
+	BYTE $0xc5; BYTE $0xd5; BYTE $0x72; BYTE $0xd5; BYTE $0x14
+
+	VPXOR	X3,X5,X5
+
+	// VPADDD	X5,X4,X4
+	BYTE $0xc5; BYTE $0xdd; BYTE $0xfe; BYTE $0xe5
+
+	VPXOR	X4,X7,X7
+	// VPSHUFB	0(R12),X7,X7
+	BYTE $0xc4; BYTE $0xc2; BYTE $0x45; BYTE $0x00; BYTE $0x3c; BYTE $0x24
+
+
+	// VPADDD	X7,X6,X6
+	BYTE $0xc5; BYTE $0xcd; BYTE $0xfe; BYTE $0xf7
+
+	VPXOR	X6,X5,X5
+
+	// VPSLLD	$7,X5,X3
+	BYTE $0xc5; BYTE $0xe5; BYTE $0x72; BYTE $0xf5; BYTE $0x07
+
+	// VPSRLD	$25,X5,X5
+	BYTE $0xc5; BYTE $0xd5; BYTE $0x72; BYTE $0xd5; BYTE $0x19
+
+	VPXOR	X3,X5,X5
+	// VPALIGNR	$4,X5,X5,X5
+	BYTE $0xc4; BYTE $0xe3; BYTE $0x55; BYTE $0x0f; BYTE $0xed; BYTE $0x04
+
+	// VPALIGNR	$8,X6,X6,X6
+	BYTE $0xc4; BYTE $0xe3; BYTE $0x4d; BYTE $0x0f; BYTE $0xf6; BYTE $0x08
+
+	// VPALIGNR	$12,X7,X7,X7
+	BYTE $0xc4; BYTE $0xe3; BYTE $0x45; BYTE $0x0f; BYTE $0xff; BYTE $0x0c
+
+
+	// VPADDD	X5,X4,X4
+	BYTE $0xc5; BYTE $0xdd; BYTE $0xfe; BYTE $0xe5
+
+	VPXOR	X4,X7,X7
+	// VPSHUFB	32(R13),X7,X7
+	BYTE $0xc4; BYTE $0xc2; BYTE $0x45; BYTE $0x00; BYTE $0x7d; BYTE $0x20
+
+
+	// VPADDD	X7,X6,X6
+	BYTE $0xc5; BYTE $0xcd; BYTE $0xfe; BYTE $0xf7
+
+	VPXOR	X6,X5,X5
+	// VPSLLD	$12,X5,X3
+	BYTE $0xc5; BYTE $0xe5; BYTE $0x72; BYTE $0xf5; BYTE $0x0c
+
+	// VPSRLD	$20,X5,X5
+	BYTE $0xc5; BYTE $0xd5; BYTE $0x72; BYTE $0xd5; BYTE $0x14
+
+	VPXOR	X3,X5,X5
+
+	// VPADDD	X5,X4,X4
+	BYTE $0xc5; BYTE $0xdd; BYTE $0xfe; BYTE $0xe5
+
+	VPXOR	X4,X7,X7
+	// VPSHUFB	0(R12),X7,X7
+	BYTE $0xc4; BYTE $0xc2; BYTE $0x45; BYTE $0x00; BYTE $0x3c; BYTE $0x24
+
+
+	// VPADDD	X7,X6,X6
+	BYTE $0xc5; BYTE $0xcd; BYTE $0xfe; BYTE $0xf7
+
+	VPXOR	X6,X5,X5
+
+	// VPSLLD	$7,X5,X3
+	BYTE $0xc5; BYTE $0xe5; BYTE $0x72; BYTE $0xf5; BYTE $0x07
+
+	// VPSRLD	$25,X5,X5
+	BYTE $0xc5; BYTE $0xd5; BYTE $0x72; BYTE $0xd5; BYTE $0x19
+
+	VPXOR	X3,X5,X5
+	// VPALIGNR	$12,X5,X5,X5
+	BYTE $0xc4; BYTE $0xe3; BYTE $0x55; BYTE $0x0f; BYTE $0xed; BYTE $0x0c
+
+	// VPALIGNR	$8,X6,X6,X6
+	BYTE $0xc4; BYTE $0xe3; BYTE $0x4d; BYTE $0x0f; BYTE $0xf6; BYTE $0x08
+
+	// VPALIGNR	$4,X7,X7,X7
+	BYTE $0xc4; BYTE $0xe3; BYTE $0x45; BYTE $0x0f; BYTE $0xff; BYTE $0x04
+
+
+	DECQ	AX
+	JNZ	label1c
+
+	// VPADDD	(R11),X4,X4
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x5d; BYTE $0xfe; BYTE $0x23
+
+	// VPADDD	X0,X5,X5
+	BYTE $0xc5; BYTE $0xd5; BYTE $0xfe; BYTE $0xe8
+
+	// VPADDD	X1,X6,X6
+	BYTE $0xc5; BYTE $0xcd; BYTE $0xfe; BYTE $0xf1
+
+	// VPADDD	X2,X7,X7
+	BYTE $0xc5; BYTE $0xc5; BYTE $0xfe; BYTE $0xfa
+
+	// VPADDQ	(R15),X2,X2
+	BYTE $0xc4; BYTE $0xc1; BYTE $0x6d; BYTE $0xd4; BYTE $0x17
+
+
+	// VPERM2I128	$2,X4,X5,X12
+	BYTE $0xc4; BYTE $0x63; BYTE $0x55; BYTE $0x46; BYTE $0xe4; BYTE $0x02
+
+	// VPERM2I128	$2,X6,X7,X13
+	BYTE $0xc4; BYTE $0x63; BYTE $0x45; BYTE $0x46; BYTE $0xee; BYTE $0x02
+
+	// VPERM2I128	$19,X4,X5,X14
+	BYTE $0xc4; BYTE $0x63; BYTE $0x55; BYTE $0x46; BYTE $0xf4; BYTE $0x13
+
+	// VPERM2I128	$19,X6,X7,X15
+	BYTE $0xc4; BYTE $0x63; BYTE $0x45; BYTE $0x46; BYTE $0xfe; BYTE $0x13
+
+
+	VPXOR	32*0(SI),X12,X12
+	VPXOR	32*1(SI),X13,X13
+	VPXOR	32*2(SI),X14,X14
+	VPXOR	32*3(SI),X15,X15
+
+	VMOVDQU	X12,32*0(DI)
+	VMOVDQU	X13,32*1(DI)
+	VMOVDQU	X14,32*2(DI)
+	VMOVDQU	X15,32*3(DI)
+
+	LEAQ	64*2(SI),SI
+	LEAQ	64*2(DI),DI
+	SUBQ	$128,DX
+	JMP	label2c
+label2d:
+	VZEROUPPER
+	RET
+
