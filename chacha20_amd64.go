@@ -91,11 +91,11 @@ func (s *stream20avx) XORKeyStream(dst, src []byte) {
 	var bufSize uint
 
 	if useAVX2 {
-		chacha_20_core_avx2(&dst[0], &src[0], uint64(len(src)), &s.key[0], &s.nonce[0], s.counter)
+		chacha_20_core_avx2(&dst[0], &src[0], uint64(len(src)), &s.key, &s.nonce, s.counter)
 
 		bufSize = 128
 	} else {
-		chacha_20_core_avx(&dst[0], &src[0], uint64(len(src)), &s.key[0], &s.nonce[0], s.counter)
+		chacha_20_core_avx(&dst[0], &src[0], uint64(len(src)), &s.key, &s.nonce, s.counter)
 
 		bufSize = 64
 	}
@@ -106,13 +106,13 @@ func (s *stream20avx) XORKeyStream(dst, src []byte) {
 		if useAVX2 {
 			s.counter += uint64(len(src)/64) &^ 1
 
-			chacha_20_core_avx2(&s.buffer[0], &s.buffer[0], 128, &s.key[0], &s.nonce[0], s.counter)
+			chacha_20_core_avx2(&s.buffer[0], &s.buffer[0], 128, &s.key, &s.nonce, s.counter)
 
 			s.counter += 2
 		} else {
 			s.counter += uint64(len(src) / 64)
 
-			chacha_20_core_avx(&s.buffer[0], &s.buffer[0], 64, &s.key[0], &s.nonce[0], s.counter)
+			chacha_20_core_avx(&s.buffer[0], &s.buffer[0], 64, &s.key, &s.nonce, s.counter)
 
 			s.counter++
 		}
@@ -139,8 +139,8 @@ func hasAVX() (avx, avx2 bool)
 
 // This function is implemented in chacha20_avx_amd64.s
 //go:noescape
-func chacha_20_core_avx(out, in *byte, in_len uint64, key, nonce *byte, counter uint64)
+func chacha_20_core_avx(out, in *byte, in_len uint64, key *[32]byte, nonce *[8]byte, counter uint64)
 
 // This function is implemented in chacha20_avx2_amd64.s
 //go:noescape
-func chacha_20_core_avx2(out, in *byte, in_len uint64, key, nonce *byte, counter uint64)
+func chacha_20_core_avx2(out, in *byte, in_len uint64, key *[32]byte, nonce *[8]byte, counter uint64)
