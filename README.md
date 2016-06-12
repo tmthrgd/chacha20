@@ -23,7 +23,6 @@ BenchmarkRC4-8       	    1000	   1335411 ns/op	 785.21 MB/s	[crypto/rc4]
 
 ## License
 
-Unless otherwise noted, the ip-blocker-agent source files are distributed under the Modified BSD License
-found in the LICENSE file.
+Unless otherwise noted, the chacha20 source files are distributed under the Modified BSD License found in the LICENSE file.
 
 This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit (http://www.openssl.org/)
