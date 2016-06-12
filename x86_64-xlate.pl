@@ -783,7 +783,7 @@ while($line=<>) {
                 $argline =~ s/\((?:[re](ax|bx|cx|dx|di|si)|(r\d+))\)/"(" . uc($1 or $2) . ")"/ge;
 		
 		if ($golang_no_avx && $argline !~ /\((?:SP|FP|SB)\)/ && grep { $insn eq $_ } @golang_missing_avx) {
-		    printf "\t// %s\t%s\n",$insn,$argline;
+		    printf "\t// %s\t%s",$insn,$argline;
 
 		    ($fh, $filename) = tempfile();
 		    
@@ -801,7 +801,7 @@ while($line=<>) {
 		        chomp $x;
 			
 			if ($x =~ /^\s+\d:\s+([0-9a-f ]+)/i) {
-			    printf "\t%s\n", join("; ", map("BYTE \$0x$_", split(/ /, $1)));
+			    printf "\n\t%s", join("; ", map("BYTE \$0x$_", split(/ /, $1)));
 			}
 		    }
 		    
