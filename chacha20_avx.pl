@@ -201,10 +201,10 @@ TEXT ·chacha_20_core_avx(SB),\$0-48
 	movq	nonce+32(FP), R8
 	movq	counter+40(FP), R9
 
-	movq \$chacha20_consts<>(SB), R12
-	movq \$rol8<>(SB), R13
-	movq \$rol16<>(SB), R14
-	movq \$avxInc<>(SB), R15
+	movq	\$chacha20_consts<>(SB), R12
+	movq	\$rol8<>(SB), R13
+	movq	\$rol16<>(SB), R14
+	movq	\$avxInc<>(SB), R15
 
 ___
 } else {

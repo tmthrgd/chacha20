@@ -264,11 +264,11 @@ TEXT ·chacha_20_core_avx2(SB),\$0-48
 	movq	nonce+32(FP), R8
 	movq	counter+40(FP), R9
 
-	movq \$chacha20_consts_avx2<>(SB), R11
-	movq \$rol8_avx2<>(SB), R12
-	movq \$rol16_avx2<>(SB), R13
-	movq \$avx2Init<>(SB), R14
-	movq \$avx2Inc<>(SB), R15
+	movq	\$chacha20_consts_avx2<>(SB), R11
+	movq	\$rol8_avx2<>(SB), R12
+	movq	\$rol16_avx2<>(SB), R13
+	movq	\$avx2Init<>(SB), R14
+	movq	\$avx2Inc<>(SB), R15
 
 ___
 } else {
