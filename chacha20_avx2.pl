@@ -245,10 +245,6 @@ ___
 }
 
 {
-my ($state_4567, $state_89ab, $state_cdef, $tmp,
-    $v0, $v1, $v2, $v3, $v4, $v5, $v6, $v7,
-    $v8, $v9, $v10, $v11)=map("%xmm$_",(0..15));
-
 my ($state_4567_avx2, $state_89ab_avx2, $state_cdef_avx2, $tmp_avx2,
     $y0, $y1, $y2, $y3, $y4, $y5, $y6, $y7,
     $y8, $y9, $y10, $y11)=map("%ymm$_",(0..15));

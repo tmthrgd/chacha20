@@ -71,7 +71,7 @@ if (`$ENV{CC} -v 2>&1` =~ /(^clang version|based on LLVM) ([3-9])\.([0-9]+)/) {
 
 $avx = 2 if ($flavour =~ /^golang/);
 
-if ($avx>=2) {{
+if ($avx>=1) {{
 
 sub chacha_qr {
 my ($a,$b,$c,$d,$tmp)=@_;
@@ -187,12 +187,6 @@ ___
 my ($state_4567, $state_89ab, $state_cdef, $tmp,
     $v0, $v1, $v2, $v3, $v4, $v5, $v6, $v7,
     $v8, $v9, $v10, $v11)=map("%xmm$_",(0..15));
-
-my ($state_4567_avx2, $state_89ab_avx2, $state_cdef_avx2, $tmp_avx2,
-    $y0, $y1, $y2, $y3, $y4, $y5, $y6, $y7,
-    $y8, $y9, $y10, $y11)=map("%ymm$_",(0..15));
-
-my $state_cdef_xmm="%xmm2";
 
 my ($out, $in, $in_len, $key_ptr, $nonce_ptr, $counter, $nr)
    =("%rdi", "%rsi", "%rdx", "%rcx", "%r8", "%r9", "%rax");
