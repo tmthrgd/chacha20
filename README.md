@@ -17,7 +17,7 @@ The ChaCha20 implementation was taken from
 BenchmarkChaCha20Go-8	     300	   5845269 ns/op	 179.39 MB/s	[codahale/chacha20]
 BenchmarkChaCha20-8  	    2000	    734242 ns/op	1428.11 MB/s	[tmthrgd/chacha20 - AVX only]
 BenchmarkAESCTR-8    	     500	   2591008 ns/op	 404.70 MB/s	[crypto/aes crypto/cipher]
-BenchmarkAESGCM-8    	     500	   2363450 ns/op	 443.66 MB/s	[crypto/aes crypto/cipher]
+BenchmarkAESGCM-8    	    2000	    773347 ns/op	1355.89 MB/s	[crypto/aes crypto/cipher]
 BenchmarkRC4-8       	    1000	   1335411 ns/op	 785.21 MB/s	[crypto/rc4]
 ```
 

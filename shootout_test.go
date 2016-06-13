@@ -62,7 +62,7 @@ func BenchmarkAESGCM(b *testing.B) {
 	b.SetBytes(benchSize)
 
 	input := make([]byte, benchSize)
-	output := make([]byte, benchSize)
+	output := make([]byte, 0, benchSize+c.Overhead())
 
 	for i := 0; i < b.N; i++ {
 		c.Seal(output, nonce, input, nil)
