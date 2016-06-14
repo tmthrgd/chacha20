@@ -53,7 +53,7 @@ func BenchmarkAESCTR(b *testing.B) {
 }
 
 func BenchmarkAESGCM(b *testing.B) {
-	key := make([]byte, 16)
+	key := make([]byte, 32)
 	a, _ := aes.NewCipher(key)
 	c, _ := cipher.NewGCM(a)
 
