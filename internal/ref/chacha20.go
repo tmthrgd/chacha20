@@ -23,6 +23,8 @@ import (
 	"crypto/cipher"
 	"encoding/binary"
 	"unsafe"
+
+	"github.com/tmthrgd/chacha20/internal/xor"
 )
 
 const (
@@ -94,17 +96,15 @@ func (s *stream) XORKeyStream(dst, src []byte) {
 			limit = max
 		}
 
-		o := s.offset
-		for j := i; j < limit; j++ {
-			dst[j] = src[j] ^ s.block[o]
+		j := xor.Bytes(dst[i:limit], src[i:limit], s.block[s.offset:])
+		for o := s.offset; o < j; o++ {
 			s.block[o] = 0
-			o++
 		}
 
+		s.offset += j
 		i += gap
-		s.offset = o
 
-		if o == blockSize {
+		if s.offset == blockSize {
 			s.advance()
 		}
 	}

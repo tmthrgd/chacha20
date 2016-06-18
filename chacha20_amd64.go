@@ -11,6 +11,7 @@ import (
 	"crypto/cipher"
 
 	"github.com/tmthrgd/chacha20/internal/ref"
+	"github.com/tmthrgd/chacha20/internal/xor"
 )
 
 var useAVX, useAVX2 = hasAVX()
@@ -74,11 +75,9 @@ func (s *streamAVX) XORKeyStream(dst, src []byte) {
 	}
 
 	if s.bufPos != 0 && s.bufPos != 128 {
-		i := 0
-
-		for ; i < len(src) && s.bufPos+i < 128; i++ {
-			dst[i] = s.buffer[s.bufPos+i] ^ src[i]
-			s.buffer[s.bufPos+i] = 0
+		i := xor.Bytes(dst, s.buffer[s.bufPos:], src)
+		for j := 0; j < i; j++ {
+			s.buffer[s.bufPos+j] = 0
 		}
 
 		s.bufPos += i
