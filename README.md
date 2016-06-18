@@ -13,11 +13,14 @@ The pure Go ChaCha20 implementation was taken from [codahale/chacha20](https://g
 ## Benchmark
 
 ```
-BenchmarkChaCha20Go-8	     300	   5845269 ns/op	 179.39 MB/s	[codahale/chacha20]
-BenchmarkChaCha20-8  	    2000	    734242 ns/op	1428.11 MB/s	[tmthrgd/chacha20 - AVX only]
-BenchmarkAESCTR-8    	     500	   2591008 ns/op	 404.70 MB/s	[crypto/aes crypto/cipher]
-BenchmarkAESGCM-8    	    2000	    865740 ns/op	1211.19 MB/s	[crypto/aes crypto/cipher]
-BenchmarkRC4-8       	    1000	   1335411 ns/op	 785.21 MB/s	[crypto/rc4]
+BenchmarkDraftChaCha20Codahale-8	     200	   5951390 ns/op	 176.19 MB/s	[codahale/chacha20]
+BenchmarkRFCChaCha20Go-8        	     200	   6251636 ns/op	 167.73 MB/s	[tmthrgd/chacha20/internal/ref]
+BenchmarkDraftChaCha20Go-8      	     200	   6252036 ns/op	 167.72 MB/s	[tmthrgd/chacha20/internal/ref]
+BenchmarkRFCChaCha20-8          	    2000	    730684 ns/op	1435.06 MB/s	[tmthrgd/chacha20 - AVX only]
+BenchmarkDraftChaCha20-8        	    2000	    730687 ns/op	1435.05 MB/s	[tmthrgd/chacha20 - AVX only]
+BenchmarkAESCTR-8               	     500	   2600296 ns/op	 403.25 MB/s	[crypto/aes crypto/cipher]
+BenchmarkAESGCM-8               	    2000	    864448 ns/op	1213.00 MB/s	[crypto/aes crypto/cipher]
+BenchmarkRC4-8                  	    1000	   1332092 ns/op	 787.16 MB/s	[crypto/rc4]
 ```
 
 ## License
