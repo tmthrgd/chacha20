@@ -10,29 +10,37 @@ package chacha20
 import (
 	"crypto/cipher"
 
-	ref "github.com/codahale/chacha20"
+	"github.com/tmthrgd/chacha20/internal/ref"
 )
 
-const (
-	// KeySize is the length of ChaCha20 keys, in bytes.
-	KeySize = ref.KeySize
-
-	// NonceSize is the length of ChaCha20 nonces, in bytes.
-	NonceSize = ref.NonceSize
-)
-
-var (
-	// ErrInvalidKey is returned when the provided key is not 256 bits long.
-	ErrInvalidKey = ref.ErrInvalidKey
-
-	// ErrInvalidNonce is returned when the provided nonce is not 64 bits long.
-	ErrInvalidNonce = ref.ErrInvalidNonce
-)
-
-// New creates and returns a new cipher.Stream. The key argument must be 256
-// bits long, and the nonce argument must be 64 bits long. The nonce must be
+// NewRFC creates and returns a new cipher.Stream. The key argument must be 256
+// bits long, and the nonce argument must be 96 bits long. The nonce must be
 // randomly generated or used only once. This Stream instance must not be used
-// to encrypt more than 2^70 bytes (~1 zettabyte).
-func New(key, nonce []byte) (cipher.Stream, error) {
-	return ref.New(key, nonce)
+// to encrypt more than 2^32 bytes (256 gigabytes).
+func NewRFC(key, nonce []byte) (cipher.Stream, error) {
+	if len(key) != KeySize {
+		return nil, ErrInvalidKey
+	}
+
+	if len(nonce) != RFCNonceSize {
+		return nil, ErrInvalidNonce
+	}
+
+	return ref.NewRFC(key, nonce)
+}
+
+// NewDraft creates and returns a new cipher.Stream. The key argument must be
+// 256 bits long, and the nonce argument must be 64 bits long. The nonce must
+// be randomly generated or used only once. This Stream instance must not be
+// used to encrypt more than 2^70 bytes (~1 zettabyte).
+func NewDraft(key, nonce []byte) (cipher.Stream, error) {
+	if len(key) != KeySize {
+		return nil, ErrInvalidKey
+	}
+
+	if len(nonce) != DraftNonceSize {
+		return nil, ErrInvalidNonce
+	}
+
+	return ref.NewDraft(key, nonce)
 }

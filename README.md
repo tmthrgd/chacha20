@@ -3,13 +3,12 @@
 [![GoDoc](https://godoc.org/github.com/tmthrgd/chacha20?status.svg)](https://godoc.org/github.com/tmthrgd/chacha20)
 [![Build Status](https://travis-ci.org/tmthrgd/chacha20.svg?branch=master)](https://travis-ci.org/tmthrgd/chacha20)
 
-An AVX and AVX2 implementation of the ChaCha20 stream cipher for Golang.
+An AVX/AVX2/pure-Go implementation of the ChaCha20 stream cipher for Golang.
 
-For systems with neither AVX nor AVX2, it falls back to
-[codahale/chacha20](https://github.com/codahale/chacha20) - a pure Golang implementation.
+The AVX and AVX2 ChaCha20 implementations were taken from
+[cloudflare/sslconfig](https://github.com/cloudflare/sslconfig/blob/master/patches/openssl__chacha20_poly1305_draft_and_rfc_ossl102g.patch).
 
-The ChaCha20 implementation was taken from
-[cloudflare/sslconfig](https://github.com/cloudflare/sslconfig/blob/master/patches/openssl__chacha20_poly1305_cf.patch).
+The pure Go ChaCha20 implementation was taken from [codahale/chacha20](https://github.com/codahale/chacha20).
 
 ## Benchmark
 

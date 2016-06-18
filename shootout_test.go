@@ -10,7 +10,8 @@ import (
 	"crypto/rc4"
 	"testing"
 
-	ref "github.com/codahale/chacha20"
+	codahale "github.com/codahale/chacha20"
+	ref "github.com/tmthrgd/chacha20/internal/ref"
 )
 
 const benchSize = 1024 * 1024
@@ -26,18 +27,42 @@ func benchmarkStream(b *testing.B, c cipher.Stream) {
 	}
 }
 
-func BenchmarkChaCha20Go(b *testing.B) {
-	key := make([]byte, ref.KeySize)
-	nonce := make([]byte, ref.NonceSize)
-	c, _ := ref.New(key, nonce)
+func BenchmarkDraftChaCha20Codahale(b *testing.B) {
+	key := make([]byte, codahale.KeySize)
+	nonce := make([]byte, codahale.NonceSize)
+	c, _ := codahale.New(key, nonce)
 
 	benchmarkStream(b, c)
 }
 
-func BenchmarkChaCha20(b *testing.B) {
+func BenchmarkRFCChaCha20Go(b *testing.B) {
 	key := make([]byte, KeySize)
-	nonce := make([]byte, NonceSize)
-	c, _ := New(key, nonce)
+	nonce := make([]byte, RFCNonceSize)
+	c, _ := ref.NewRFC(key, nonce)
+
+	benchmarkStream(b, c)
+}
+
+func BenchmarkDraftChaCha20Go(b *testing.B) {
+	key := make([]byte, KeySize)
+	nonce := make([]byte, DraftNonceSize)
+	c, _ := ref.NewDraft(key, nonce)
+
+	benchmarkStream(b, c)
+}
+
+func BenchmarkRFCChaCha20(b *testing.B) {
+	key := make([]byte, KeySize)
+	nonce := make([]byte, RFCNonceSize)
+	c, _ := NewRFC(key, nonce)
+
+	benchmarkStream(b, c)
+}
+
+func BenchmarkDraftChaCha20(b *testing.B) {
+	key := make([]byte, KeySize)
+	nonce := make([]byte, DraftNonceSize)
+	c, _ := NewDraft(key, nonce)
 
 	benchmarkStream(b, c)
 }

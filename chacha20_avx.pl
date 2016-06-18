@@ -34,7 +34,6 @@
 ##############################################################################
 
 
-
 $flavour = shift;
 $output  = shift;
 if ($flavour =~ /\./) { $output = $flavour; undef $flavour; }
@@ -50,54 +49,60 @@ open OUT,"| \"$^X\" $xlate $flavour $output";
 *STDOUT=*OUT;
 
 if (`$ENV{CC} -Wa,-v -c -o /dev/null -x assembler /dev/null 2>&1`
-		=~ /GNU assembler version ([2-9]\.[0-9]+)/) {
-	$avx = ($1>=2.19) + ($1>=2.22);
+    =~ /GNU assembler version ([2-9]\.[0-9]+)/) {
+  $avx = ($1>=2.19) + ($1>=2.22);
 }
 
 if ($win64 && ($flavour =~ /nasm/ || $ENV{ASM} =~ /nasm/) &&
-	    `nasm -v 2>&1` =~ /NASM version ([2-9]\.[0-9]+)/) {
-	$avx = ($1>=2.09) + ($1>=2.10);
+      `nasm -v 2>&1` =~ /NASM version ([2-9]\.[0-9]+)/) {
+  $avx = ($1>=2.09) + ($1>=2.10);
 }
 
 if ($win64 && ($flavour =~ /masm/ || $ENV{ASM} =~ /ml64/) &&
-	    `ml64 2>&1` =~ /Version ([0-9]+)\./) {
-	$avx = ($1>=10) + ($1>=11);
+      `ml64 2>&1` =~ /Version ([0-9]+)\./) {
+  $avx = ($1>=10) + ($1>=11);
 }
 
 if (`$ENV{CC} -v 2>&1` =~ /(^clang version|based on LLVM) ([3-9])\.([0-9]+)/) {
-	my $ver = $2 + $3/100.0;	# 3.1->3.01, 3.10->3.10
-	$avx = ($ver>=3.0) + ($ver>=3.01);
+  my $ver = $2 + $3/100.0;  # 3.1->3.01, 3.10->3.10
+  $avx = ($ver>=3.0) + ($ver>=3.01);
 }
 
 $avx = 2 if ($flavour =~ /^golang/);
 
 if ($avx>=1) {{
 
+my ($rol8, $rol16, $state_cdef, $tmp,
+    $v0, $v1, $v2, $v3, $v4, $v5, $v6, $v7,
+    $v8, $v9, $v10, $v11)=map("%xmm$_",(0..15));
+
 sub chacha_qr {
-my ($a,$b,$c,$d,$tmp)=@_;
+
+my ($a,$b,$c,$d)=@_;
 $code.=<<___;
 
-	vpaddd	$b, $a, $a	# a += b
-	vpxor	$a, $d, $d	# d ^= a
-	vpshufb	.rol16(%rip), $d, $d	# d <<<= 16
+  vpaddd  $b, $a, $a            # a += b
+  vpxor   $a, $d, $d            # d ^= a
+  vpshufb $rol16, $d, $d        # d <<<= 16
 
-	vpaddd	$d, $c, $c	# c += d
-	vpxor	$c, $b, $b	# b ^= c
-	vpslld	\$12, $b, $tmp
-	vpsrld	\$20, $b, $b
-	vpxor	$tmp, $b, $b	# b <<<= 12
+  vpaddd  $d, $c, $c            # c += d
+  vpxor   $c, $b, $b            # b ^= c
+  vpslld  \$12, $b, $tmp
+  vpsrld  \$20, $b, $b
+  vpxor   $tmp, $b, $b          # b <<<= 12
 
-	vpaddd	$b, $a, $a	# a += b
-	vpxor	$a, $d, $d	# d ^= a
-	vpshufb	.rol8(%rip), $d, $d	# d <<<= 8
+  vpaddd  $b, $a, $a            # a += b
+  vpxor   $a, $d, $d            # d ^= a
+  vpshufb $rol8, $d, $d         # d <<<= 8
 
-	vpaddd	$d, $c, $c	# c += d
-	vpxor	$c, $b, $b	# b ^= c
+  vpaddd  $d, $c, $c            # c += d
+  vpxor   $c, $b, $b            # b ^= c
 
-	vpslld	\$7, $b, $tmp
-	vpsrld	\$25, $b, $b
-	vpxor	$tmp, $b, $b	# b <<<= 7
+  vpslld  \$7, $b, $tmp
+  vpsrld  \$25, $b, $b
+  vpxor   $tmp, $b, $b          # b <<<= 7
 ___
+
 }
 
 if ($flavour =~ /^golang/) {
@@ -180,26 +185,23 @@ chacha20_consts:
 .byte 2,3,0,1, 6,7,4,5, 10,11,8,9, 14,15,12,13
 .avxInc:
 .quad 1,0
+
 ___
 }
 
 {
-my ($state_4567, $state_89ab, $state_cdef, $tmp,
-    $v0, $v1, $v2, $v3, $v4, $v5, $v6, $v7,
-    $v8, $v9, $v10, $v11)=map("%xmm$_",(0..15));
 
-my ($out, $in, $in_len, $key_ptr, $nonce_ptr, $counter, $nr)
-   =("%rdi", "%rsi", "%rdx", "%rcx", "%r8", "%r9", "%rax");
+
+my ($out, $in, $in_len, $key_ptr, $nr)
+   =("%rdi", "%rsi", "%rdx", "%rcx", "%r8");
 
 if ($flavour =~ /^golang/) {
     $code.=<<___;
-TEXT ·chacha_20_core_avx(SB),\$0-48
+TEXT ·chacha_20_core_avx(SB),\$0-32
 	movq	out+0(FP), DI
 	movq	in+8(FP), SI
 	movq	in_len+16(FP), DX
-	movq	key+24(FP), CX
-	movq	nonce+32(FP), R8
-	movq	counter+40(FP), R9
+	movq	state+24(FP), CX
 
 	movq	\$chacha20_consts<>(SB), R12
 	movq	\$rol8<>(SB), R13
@@ -217,257 +219,272 @@ ___
 }
 
 $code.=<<___;
-	vzeroupper
+  vzeroupper
 
-	# Init state
-	vmovdqu	16*0($key_ptr), $state_4567
-	vmovdqu	16*1($key_ptr), $state_89ab
-	vmovq	$counter, $state_cdef
-	vpinsrq	\$1, ($nonce_ptr), $state_cdef, $state_cdef
-2:
-	cmp	\$3*64, $in_len
-	jb	2f
-
-	vmovdqa	chacha20_consts(%rip), $v0
-	vmovdqa	chacha20_consts(%rip), $v4
-	vmovdqa	chacha20_consts(%rip), $v8
-
-	vmovdqa	$state_4567, $v1
-	vmovdqa	$state_4567, $v5
-	vmovdqa	$state_4567, $v9
-
-	vmovdqa	$state_89ab, $v2
-	vmovdqa	$state_89ab, $v6
-	vmovdqa	$state_89ab, $v10
-
-	vmovdqa	$state_cdef, $v3
-	vpaddq	.avxInc(%rip), $v3, $v7
-	vpaddq	.avxInc(%rip), $v7, $v11
-
-	mov	\$10, $nr
-
-	1:
-___
-		&chacha_qr($v0,$v1,$v2,$v3,$tmp);
-		&chacha_qr($v4,$v5,$v6,$v7,$tmp);
-		&chacha_qr($v8,$v9,$v10,$v11,$tmp);
-$code.=<<___;
-		vpalignr \$4, $v1, $v1, $v1
-		vpalignr \$8, $v2, $v2, $v2
-		vpalignr \$12, $v3, $v3, $v3
-		vpalignr \$4, $v5, $v5, $v5
-		vpalignr \$8, $v6, $v6, $v6
-		vpalignr \$12, $v7, $v7, $v7
-		vpalignr \$4, $v9, $v9, $v9
-		vpalignr \$8, $v10, $v10, $v10
-		vpalignr \$12, $v11, $v11, $v11
-___
-		&chacha_qr($v0,$v1,$v2,$v3,$tmp);
-		&chacha_qr($v4,$v5,$v6,$v7,$tmp);
-		&chacha_qr($v8,$v9,$v10,$v11,$tmp);
-$code.=<<___;
-		vpalignr \$12, $v1, $v1, $v1
-		vpalignr \$8, $v2, $v2, $v2
-		vpalignr \$4, $v3, $v3, $v3
-		vpalignr \$12, $v5, $v5, $v5
-		vpalignr \$8, $v6, $v6, $v6
-		vpalignr \$4, $v7, $v7, $v7
-		vpalignr \$12, $v9, $v9, $v9
-		vpalignr \$8, $v10, $v10, $v10
-		vpalignr \$4, $v11, $v11, $v11
-
-		dec	$nr
-
-	jnz	1b
-
-	vpaddd	chacha20_consts(%rip), $v0, $v0
-	vpaddd	chacha20_consts(%rip), $v4, $v4
-	vpaddd	chacha20_consts(%rip), $v8, $v8
-
-	vpaddd	$state_4567, $v1, $v1
-	vpaddd	$state_4567, $v5, $v5
-	vpaddd	$state_4567, $v9, $v9
-
-	vpaddd	$state_89ab, $v2, $v2
-	vpaddd	$state_89ab, $v6, $v6
-	vpaddd	$state_89ab, $v10, $v10
-
-	vpaddd	$state_cdef, $v3, $v3
-	vpaddq	.avxInc(%rip), $state_cdef, $state_cdef
-	vpaddd	$state_cdef, $v7, $v7
-	vpaddq	.avxInc(%rip), $state_cdef, $state_cdef
-	vpaddd	$state_cdef, $v11, $v11
-	vpaddq	.avxInc(%rip), $state_cdef, $state_cdef
-
-	vpxor	16*0($in), $v0, $v0
-	vpxor	16*1($in), $v1, $v1
-	vpxor	16*2($in), $v2, $v2
-	vpxor	16*3($in), $v3, $v3
-
-	vmovdqu	$v0, 16*0($out)
-	vmovdqu	$v1, 16*1($out)
-	vmovdqu	$v2, 16*2($out)
-	vmovdqu	$v3, 16*3($out)
-
-	vpxor	16*4($in), $v4, $v4
-	vpxor	16*5($in), $v5, $v5
-	vpxor	16*6($in), $v6, $v6
-	vpxor	16*7($in), $v7, $v7
-
-	vmovdqu	$v4, 16*4($out)
-	vmovdqu	$v5, 16*5($out)
-	vmovdqu	$v6, 16*6($out)
-	vmovdqu	$v7, 16*7($out)
-
-	vpxor	16*8($in), $v8, $v8
-	vpxor	16*9($in), $v9, $v9
-	vpxor	16*10($in), $v10, $v10
-	vpxor	16*11($in), $v11, $v11
-
-	vmovdqu	$v8, 16*8($out)
-	vmovdqu	$v9, 16*9($out)
-	vmovdqu	$v10, 16*10($out)
-	vmovdqu	$v11, 16*11($out)
-
-	lea	16*12($in), $in
-	lea	16*12($out), $out
-	sub	\$16*12, $in_len
-
-	jmp	2b
+  # Init state
+  vmovdqa  .rol8(%rip), $rol8
+  vmovdqa  .rol16(%rip), $rol16
+  vmovdqu  16*2($key_ptr), $state_cdef
 
 2:
-	cmp	\$2*64, $in_len
-	jb	2f
+  cmp  \$64*3, $in_len
+  jb   2f
 
-	vmovdqa	chacha20_consts(%rip), $v0
-	vmovdqa	chacha20_consts(%rip), $v4
-	vmovdqa	$state_4567, $v1
-	vmovdqa	$state_4567, $v5
-	vmovdqa	$state_89ab, $v2
-	vmovdqa	$state_89ab, $v6
-	vmovdqa	$state_89ab, $v10
-	vmovdqa	$state_cdef, $v3
-	vpaddq	.avxInc(%rip), $v3, $v7
+  vmovdqa  chacha20_consts(%rip), $v0
+  vmovdqu  16*0($key_ptr), $v1
+  vmovdqu  16*1($key_ptr), $v2
+  vmovdqa  $state_cdef, $v3
 
-	mov	\$10, $nr
+  vmovdqa  $v0, $v4
+  vmovdqa  $v0, $v8
 
-	1:
+  vmovdqa  $v1, $v5
+  vmovdqa  $v1, $v9
+
+  vmovdqa  $v2, $v6
+  vmovdqa  $v2, $v10
+
+  vpaddq   .avxInc(%rip), $v3, $v7
+  vpaddq   .avxInc(%rip), $v7, $v11
+
+  mov  \$10, $nr
+
+  1:
 ___
-		&chacha_qr($v0,$v1,$v2,$v3,$tmp);
-		&chacha_qr($v4,$v5,$v6,$v7,$tmp);
+
+    &chacha_qr( $v0, $v1, $v2, $v3);
+    &chacha_qr( $v4, $v5, $v6, $v7);
+    &chacha_qr( $v8, $v9,$v10,$v11);
+
 $code.=<<___;
-		vpalignr \$4, $v1, $v1, $v1
-		vpalignr \$8, $v2, $v2, $v2
-		vpalignr \$12, $v3, $v3, $v3
-		vpalignr \$4, $v5, $v5, $v5
-		vpalignr \$8, $v6, $v6, $v6
-		vpalignr \$12, $v7, $v7, $v7
+    vpalignr  \$4,  $v1,  $v1,  $v1
+    vpalignr  \$8,  $v2,  $v2,  $v2
+    vpalignr \$12,  $v3,  $v3,  $v3
+    vpalignr  \$4,  $v5,  $v5,  $v5
+    vpalignr  \$8,  $v6,  $v6,  $v6
+    vpalignr \$12,  $v7,  $v7,  $v7
+    vpalignr  \$4,  $v9,  $v9,  $v9
+    vpalignr  \$8, $v10, $v10, $v10
+    vpalignr \$12, $v11, $v11, $v11
 ___
-		&chacha_qr($v0,$v1,$v2,$v3,$tmp);
-		&chacha_qr($v4,$v5,$v6,$v7,$tmp);
+
+    &chacha_qr( $v0, $v1, $v2, $v3);
+    &chacha_qr( $v4, $v5, $v6, $v7);
+    &chacha_qr( $v8, $v9,$v10,$v11);
+
 $code.=<<___;
-		vpalignr \$12, $v1, $v1, $v1
-		vpalignr \$8, $v2, $v2, $v2
-		vpalignr \$4, $v3, $v3, $v3
-		vpalignr \$12, $v5, $v5, $v5
-		vpalignr \$8, $v6, $v6, $v6
-		vpalignr \$4, $v7, $v7, $v7
+    vpalignr \$12,  $v1,  $v1,  $v1
+    vpalignr  \$8,  $v2,  $v2,  $v2
+    vpalignr  \$4,  $v3,  $v3,  $v3
+    vpalignr \$12,  $v5,  $v5,  $v5
+    vpalignr  \$8,  $v6,  $v6,  $v6
+    vpalignr  \$4,  $v7,  $v7,  $v7
+    vpalignr \$12,  $v9,  $v9,  $v9
+    vpalignr  \$8, $v10, $v10, $v10
+    vpalignr  \$4, $v11, $v11, $v11
 
-		dec	$nr
+    dec  $nr
 
-	jnz	1b
+  jnz  1b
 
-	vpaddd	chacha20_consts(%rip), $v0, $v0
-	vpaddd	chacha20_consts(%rip), $v4, $v4
+  vpaddd  chacha20_consts(%rip), $v0, $v0
+  vpaddd  chacha20_consts(%rip), $v4, $v4
+  vpaddd  chacha20_consts(%rip), $v8, $v8
 
-	vpaddd	$state_4567, $v1, $v1
-	vpaddd	$state_4567, $v5, $v5
+  vpaddd  16*0($key_ptr), $v1, $v1
+  vpaddd  16*0($key_ptr), $v5, $v5
+  vpaddd  16*0($key_ptr), $v9, $v9
 
-	vpaddd	$state_89ab, $v2, $v2
-	vpaddd	$state_89ab, $v6, $v6
+  vpaddd  16*1($key_ptr), $v2, $v2
+  vpaddd  16*1($key_ptr), $v6, $v6
+  vpaddd  16*1($key_ptr), $v10, $v10
 
-	vpaddd	$state_cdef, $v3, $v3
-	vpaddq	.avxInc(%rip), $state_cdef, $state_cdef
-	vpaddd	$state_cdef, $v7, $v7
-	vpaddq	.avxInc(%rip), $state_cdef, $state_cdef
+  vpaddd  $state_cdef, $v3, $v3
+  vpaddq  .avxInc(%rip), $state_cdef, $state_cdef
+  vpaddd  $state_cdef, $v7, $v7
+  vpaddq  .avxInc(%rip), $state_cdef, $state_cdef
+  vpaddd  $state_cdef, $v11, $v11
+  vpaddq  .avxInc(%rip), $state_cdef, $state_cdef
 
-	vpxor	16*0($in), $v0, $v0
-	vpxor	16*1($in), $v1, $v1
-	vpxor	16*2($in), $v2, $v2
-	vpxor	16*3($in), $v3, $v3
+  vpxor  16*0($in), $v0, $v0
+  vpxor  16*1($in), $v1, $v1
+  vpxor  16*2($in), $v2, $v2
+  vpxor  16*3($in), $v3, $v3
 
-	vmovdqu	$v0, 16*0($out)
-	vmovdqu	$v1, 16*1($out)
-	vmovdqu	$v2, 16*2($out)
-	vmovdqu	$v3, 16*3($out)
+  vmovdqu  $v0, 16*0($out)
+  vmovdqu  $v1, 16*1($out)
+  vmovdqu  $v2, 16*2($out)
+  vmovdqu  $v3, 16*3($out)
 
-	vpxor	16*4($in), $v4, $v4
-	vpxor	16*5($in), $v5, $v5
-	vpxor	16*6($in), $v6, $v6
-	vpxor	16*7($in), $v7, $v7
+  vpxor  16*4($in), $v4, $v4
+  vpxor  16*5($in), $v5, $v5
+  vpxor  16*6($in), $v6, $v6
+  vpxor  16*7($in), $v7, $v7
 
-	vmovdqu	$v4, 16*4($out)
-	vmovdqu	$v5, 16*5($out)
-	vmovdqu	$v6, 16*6($out)
-	vmovdqu	$v7, 16*7($out)
+  vmovdqu  $v4, 16*4($out)
+  vmovdqu  $v5, 16*5($out)
+  vmovdqu  $v6, 16*6($out)
+  vmovdqu  $v7, 16*7($out)
 
-	lea	16*8($in), $in
-	lea	16*8($out), $out
-	sub	\$16*8, $in_len
+  vpxor  16*8($in), $v8, $v8
+  vpxor  16*9($in), $v9, $v9
+  vpxor  16*10($in), $v10, $v10
+  vpxor  16*11($in), $v11, $v11
 
-	jmp	2b
+  vmovdqu  $v8, 16*8($out)
+  vmovdqu  $v9, 16*9($out)
+  vmovdqu  $v10, 16*10($out)
+  vmovdqu  $v11, 16*11($out)
+
+  lea  16*12($in), $in
+  lea  16*12($out), $out
+  sub  \$16*12, $in_len
+
+  jmp  2b
+
 2:
-	cmp	\$64, $in_len
-	jb	2f
+  cmp  \$64*2, $in_len
+  jb   2f
 
-	vmovdqa	chacha20_consts(%rip), $v0
-	vmovdqa	$state_4567, $v1
-	vmovdqa	$state_89ab, $v2
-	vmovdqa	$state_cdef, $v3
+  vmovdqa  chacha20_consts(%rip), $v0
+  vmovdqa  chacha20_consts(%rip), $v4
+  vmovdqu  16*0($key_ptr), $v1
+  vmovdqu  16*0($key_ptr), $v5
+  vmovdqu  16*1($key_ptr), $v2
+  vmovdqu  16*1($key_ptr), $v6
+  vmovdqu  16*1($key_ptr), $v10
+  vmovdqa  $state_cdef, $v3
+  vpaddq   .avxInc(%rip), $v3, $v7
 
-	mov	\$10, $nr
+  mov  \$10, $nr
 
-	1:
+  1:
 ___
-		&chacha_qr($v0,$v1,$v2,$v3,$tmp);
+
+    &chacha_qr($v0,$v1,$v2,$v3);
+    &chacha_qr($v4,$v5,$v6,$v7);
+
 $code.=<<___;
-		vpalignr	\$4, $v1, $v1, $v1
-		vpalignr	\$8, $v2, $v2, $v2
-		vpalignr	\$12, $v3, $v3, $v3
+    vpalignr  \$4, $v1, $v1, $v1
+    vpalignr  \$8, $v2, $v2, $v2
+    vpalignr \$12, $v3, $v3, $v3
+    vpalignr  \$4, $v5, $v5, $v5
+    vpalignr  \$8, $v6, $v6, $v6
+    vpalignr \$12, $v7, $v7, $v7
 ___
-		&chacha_qr($v0,$v1,$v2,$v3,$tmp);
+
+    &chacha_qr($v0,$v1,$v2,$v3);
+    &chacha_qr($v4,$v5,$v6,$v7);
+
 $code.=<<___;
-		vpalignr	\$12, $v1, $v1, $v1
-		vpalignr	\$8, $v2, $v2, $v2
-		vpalignr	\$4, $v3, $v3, $v3
+    vpalignr \$12, $v1, $v1, $v1
+    vpalignr  \$8, $v2, $v2, $v2
+    vpalignr  \$4, $v3, $v3, $v3
+    vpalignr \$12, $v5, $v5, $v5
+    vpalignr  \$8, $v6, $v6, $v6
+    vpalignr  \$4, $v7, $v7, $v7
 
-		dec	$nr
-	jnz	1b
+    dec  $nr
 
-	vpaddd	chacha20_consts(%rip), $v0, $v0
-	vpaddd	$state_4567, $v1, $v1
-	vpaddd	$state_89ab, $v2, $v2
-	vpaddd	$state_cdef, $v3, $v3
-	vpaddq	.avxInc(%rip), $state_cdef, $state_cdef
+  jnz  1b
 
-	vpxor	16*0($in), $v0, $v0
-	vpxor	16*1($in), $v1, $v1
-	vpxor	16*2($in), $v2, $v2
-	vpxor	16*3($in), $v3, $v3
+  vpaddd  chacha20_consts(%rip), $v0, $v0
+  vpaddd  chacha20_consts(%rip), $v4, $v4
 
-	vmovdqu	$v0, 16*0($out)
-	vmovdqu	$v1, 16*1($out)
-	vmovdqu	$v2, 16*2($out)
-	vmovdqu	$v3, 16*3($out)
+  vpaddd  16*0($key_ptr), $v1, $v1
+  vpaddd  16*0($key_ptr), $v5, $v5
 
-	lea	16*4($in), $in
-	lea	16*4($out), $out
-	sub	\$16*4, $in_len
-	jmp	2b
+  vpaddd  16*1($key_ptr), $v2, $v2
+  vpaddd  16*1($key_ptr), $v6, $v6
+
+  vpaddd  $state_cdef, $v3, $v3
+  vpaddq  .avxInc(%rip), $state_cdef, $state_cdef
+  vpaddd  $state_cdef, $v7, $v7
+  vpaddq  .avxInc(%rip), $state_cdef, $state_cdef
+
+  vpxor  16*0($in), $v0, $v0
+  vpxor  16*1($in), $v1, $v1
+  vpxor  16*2($in), $v2, $v2
+  vpxor  16*3($in), $v3, $v3
+
+  vmovdqu  $v0, 16*0($out)
+  vmovdqu  $v1, 16*1($out)
+  vmovdqu  $v2, 16*2($out)
+  vmovdqu  $v3, 16*3($out)
+
+  vpxor  16*4($in), $v4, $v4
+  vpxor  16*5($in), $v5, $v5
+  vpxor  16*6($in), $v6, $v6
+  vpxor  16*7($in), $v7, $v7
+
+  vmovdqu  $v4, 16*4($out)
+  vmovdqu  $v5, 16*5($out)
+  vmovdqu  $v6, 16*6($out)
+  vmovdqu  $v7, 16*7($out)
+
+  lea  16*8($in), $in
+  lea  16*8($out), $out
+  sub  \$16*8, $in_len
+
+  jmp  2b
 2:
-	vzeroupper
-	ret
-.size	chacha_20_core_avx,.-chacha_20_core_avx
+  cmp  \$64, $in_len
+  jb  2f
+
+  vmovdqa  chacha20_consts(%rip), $v0
+  vmovdqu  16*0($key_ptr), $v1
+  vmovdqu  16*1($key_ptr), $v2
+  vmovdqa  $state_cdef, $v3
+
+  mov  \$10, $nr
+
+  1:
+___
+
+    &chacha_qr($v0,$v1,$v2,$v3);
+
+$code.=<<___;
+    vpalignr   \$4, $v1, $v1, $v1
+    vpalignr   \$8, $v2, $v2, $v2
+    vpalignr  \$12, $v3, $v3, $v3
+___
+
+    &chacha_qr($v0,$v1,$v2,$v3);
+$code.=<<___;
+    vpalignr  \$12, $v1, $v1, $v1
+    vpalignr   \$8, $v2, $v2, $v2
+    vpalignr   \$4, $v3, $v3, $v3
+
+    dec  $nr
+  jnz  1b
+
+  vpaddd  chacha20_consts(%rip), $v0, $v0
+  vpaddd  16*0($key_ptr), $v1, $v1
+  vpaddd  16*1($key_ptr), $v2, $v2
+  vpaddd  $state_cdef, $v3, $v3
+  vpaddq  .avxInc(%rip), $state_cdef, $state_cdef
+
+  vpxor  16*0($in), $v0, $v0
+  vpxor  16*1($in), $v1, $v1
+  vpxor  16*2($in), $v2, $v2
+  vpxor  16*3($in), $v3, $v3
+
+  vmovdqu  $v0, 16*0($out)
+  vmovdqu  $v1, 16*1($out)
+  vmovdqu  $v2, 16*2($out)
+  vmovdqu  $v3, 16*3($out)
+
+  lea  16*4($in), $in
+  lea  16*4($out), $out
+  sub  \$16*4, $in_len
+  jmp  2b
+
+2:
+  vmovdqu  $state_cdef, 16*2($key_ptr)
+
+  vzeroupper
+  ret
+.size  chacha_20_core_avx,.-chacha_20_core_avx
 ___
 }
 }}
@@ -485,3 +502,4 @@ if ($flavour =~ /^golang/) {
 print $code;
 
 close STDOUT;
+

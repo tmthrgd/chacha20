@@ -5,107 +5,107 @@
 
 #include "textflag.h"
 
-DATA chacha20_consts_avx2<>+0x00(SB)/1, $"e"
-DATA chacha20_consts_avx2<>+0x01(SB)/1, $"x"
-DATA chacha20_consts_avx2<>+0x02(SB)/1, $"p"
-DATA chacha20_consts_avx2<>+0x03(SB)/1, $"a"
-DATA chacha20_consts_avx2<>+0x04(SB)/1, $"n"
-DATA chacha20_consts_avx2<>+0x05(SB)/1, $"d"
-DATA chacha20_consts_avx2<>+0x06(SB)/1, $" "
-DATA chacha20_consts_avx2<>+0x07(SB)/1, $"3"
-DATA chacha20_consts_avx2<>+0x08(SB)/1, $"2"
-DATA chacha20_consts_avx2<>+0x09(SB)/1, $"-"
-DATA chacha20_consts_avx2<>+0x0a(SB)/1, $"b"
-DATA chacha20_consts_avx2<>+0x0b(SB)/1, $"y"
-DATA chacha20_consts_avx2<>+0x0c(SB)/1, $"t"
-DATA chacha20_consts_avx2<>+0x0d(SB)/1, $"e"
-DATA chacha20_consts_avx2<>+0x0e(SB)/1, $" "
-DATA chacha20_consts_avx2<>+0x0f(SB)/1, $"k"
-DATA chacha20_consts_avx2<>+0x10(SB)/1, $"e"
-DATA chacha20_consts_avx2<>+0x11(SB)/1, $"x"
-DATA chacha20_consts_avx2<>+0x12(SB)/1, $"p"
-DATA chacha20_consts_avx2<>+0x13(SB)/1, $"a"
-DATA chacha20_consts_avx2<>+0x14(SB)/1, $"n"
-DATA chacha20_consts_avx2<>+0x15(SB)/1, $"d"
-DATA chacha20_consts_avx2<>+0x16(SB)/1, $" "
-DATA chacha20_consts_avx2<>+0x17(SB)/1, $"3"
-DATA chacha20_consts_avx2<>+0x18(SB)/1, $"2"
-DATA chacha20_consts_avx2<>+0x19(SB)/1, $"-"
-DATA chacha20_consts_avx2<>+0x1a(SB)/1, $"b"
-DATA chacha20_consts_avx2<>+0x1b(SB)/1, $"y"
-DATA chacha20_consts_avx2<>+0x1c(SB)/1, $"t"
-DATA chacha20_consts_avx2<>+0x1d(SB)/1, $"e"
-DATA chacha20_consts_avx2<>+0x1e(SB)/1, $" "
-DATA chacha20_consts_avx2<>+0x1f(SB)/1, $"k"
-GLOBL chacha20_consts_avx2<>(SB), RODATA, $32
+DATA chacha20_consts<>+0x00(SB)/1, $"e"
+DATA chacha20_consts<>+0x01(SB)/1, $"x"
+DATA chacha20_consts<>+0x02(SB)/1, $"p"
+DATA chacha20_consts<>+0x03(SB)/1, $"a"
+DATA chacha20_consts<>+0x04(SB)/1, $"n"
+DATA chacha20_consts<>+0x05(SB)/1, $"d"
+DATA chacha20_consts<>+0x06(SB)/1, $" "
+DATA chacha20_consts<>+0x07(SB)/1, $"3"
+DATA chacha20_consts<>+0x08(SB)/1, $"2"
+DATA chacha20_consts<>+0x09(SB)/1, $"-"
+DATA chacha20_consts<>+0x0a(SB)/1, $"b"
+DATA chacha20_consts<>+0x0b(SB)/1, $"y"
+DATA chacha20_consts<>+0x0c(SB)/1, $"t"
+DATA chacha20_consts<>+0x0d(SB)/1, $"e"
+DATA chacha20_consts<>+0x0e(SB)/1, $" "
+DATA chacha20_consts<>+0x0f(SB)/1, $"k"
+DATA chacha20_consts<>+0x10(SB)/1, $"e"
+DATA chacha20_consts<>+0x11(SB)/1, $"x"
+DATA chacha20_consts<>+0x12(SB)/1, $"p"
+DATA chacha20_consts<>+0x13(SB)/1, $"a"
+DATA chacha20_consts<>+0x14(SB)/1, $"n"
+DATA chacha20_consts<>+0x15(SB)/1, $"d"
+DATA chacha20_consts<>+0x16(SB)/1, $" "
+DATA chacha20_consts<>+0x17(SB)/1, $"3"
+DATA chacha20_consts<>+0x18(SB)/1, $"2"
+DATA chacha20_consts<>+0x19(SB)/1, $"-"
+DATA chacha20_consts<>+0x1a(SB)/1, $"b"
+DATA chacha20_consts<>+0x1b(SB)/1, $"y"
+DATA chacha20_consts<>+0x1c(SB)/1, $"t"
+DATA chacha20_consts<>+0x1d(SB)/1, $"e"
+DATA chacha20_consts<>+0x1e(SB)/1, $" "
+DATA chacha20_consts<>+0x1f(SB)/1, $"k"
+GLOBL chacha20_consts<>(SB), RODATA, $32
 
-DATA rol8_avx2<>+0x00(SB)/1, $3
-DATA rol8_avx2<>+0x01(SB)/1, $0
-DATA rol8_avx2<>+0x02(SB)/1, $1
-DATA rol8_avx2<>+0x03(SB)/1, $2
-DATA rol8_avx2<>+0x04(SB)/1, $7
-DATA rol8_avx2<>+0x05(SB)/1, $4
-DATA rol8_avx2<>+0x06(SB)/1, $5
-DATA rol8_avx2<>+0x07(SB)/1, $6
-DATA rol8_avx2<>+0x08(SB)/1, $11
-DATA rol8_avx2<>+0x09(SB)/1, $8
-DATA rol8_avx2<>+0x0a(SB)/1, $9
-DATA rol8_avx2<>+0x0b(SB)/1, $10
-DATA rol8_avx2<>+0x0c(SB)/1, $15
-DATA rol8_avx2<>+0x0d(SB)/1, $12
-DATA rol8_avx2<>+0x0e(SB)/1, $13
-DATA rol8_avx2<>+0x0f(SB)/1, $14
-DATA rol8_avx2<>+0x10(SB)/1, $3
-DATA rol8_avx2<>+0x11(SB)/1, $0
-DATA rol8_avx2<>+0x12(SB)/1, $1
-DATA rol8_avx2<>+0x13(SB)/1, $2
-DATA rol8_avx2<>+0x14(SB)/1, $7
-DATA rol8_avx2<>+0x15(SB)/1, $4
-DATA rol8_avx2<>+0x16(SB)/1, $5
-DATA rol8_avx2<>+0x17(SB)/1, $6
-DATA rol8_avx2<>+0x18(SB)/1, $11
-DATA rol8_avx2<>+0x19(SB)/1, $8
-DATA rol8_avx2<>+0x1a(SB)/1, $9
-DATA rol8_avx2<>+0x1b(SB)/1, $10
-DATA rol8_avx2<>+0x1c(SB)/1, $16
-DATA rol8_avx2<>+0x1d(SB)/1, $12
-DATA rol8_avx2<>+0x1e(SB)/1, $13
-DATA rol8_avx2<>+0x1f(SB)/1, $14
-GLOBL rol8_avx2<>(SB), RODATA, $32
+DATA rol8<>+0x00(SB)/1, $3
+DATA rol8<>+0x01(SB)/1, $0
+DATA rol8<>+0x02(SB)/1, $1
+DATA rol8<>+0x03(SB)/1, $2
+DATA rol8<>+0x04(SB)/1, $7
+DATA rol8<>+0x05(SB)/1, $4
+DATA rol8<>+0x06(SB)/1, $5
+DATA rol8<>+0x07(SB)/1, $6
+DATA rol8<>+0x08(SB)/1, $11
+DATA rol8<>+0x09(SB)/1, $8
+DATA rol8<>+0x0a(SB)/1, $9
+DATA rol8<>+0x0b(SB)/1, $10
+DATA rol8<>+0x0c(SB)/1, $15
+DATA rol8<>+0x0d(SB)/1, $12
+DATA rol8<>+0x0e(SB)/1, $13
+DATA rol8<>+0x0f(SB)/1, $14
+DATA rol8<>+0x10(SB)/1, $3
+DATA rol8<>+0x11(SB)/1, $0
+DATA rol8<>+0x12(SB)/1, $1
+DATA rol8<>+0x13(SB)/1, $2
+DATA rol8<>+0x14(SB)/1, $7
+DATA rol8<>+0x15(SB)/1, $4
+DATA rol8<>+0x16(SB)/1, $5
+DATA rol8<>+0x17(SB)/1, $6
+DATA rol8<>+0x18(SB)/1, $11
+DATA rol8<>+0x19(SB)/1, $8
+DATA rol8<>+0x1a(SB)/1, $9
+DATA rol8<>+0x1b(SB)/1, $10
+DATA rol8<>+0x1c(SB)/1, $16
+DATA rol8<>+0x1d(SB)/1, $12
+DATA rol8<>+0x1e(SB)/1, $13
+DATA rol8<>+0x1f(SB)/1, $14
+GLOBL rol8<>(SB), RODATA, $32
 
-DATA rol16_avx2<>+0x00(SB)/1, $2
-DATA rol16_avx2<>+0x01(SB)/1, $3
-DATA rol16_avx2<>+0x02(SB)/1, $0
-DATA rol16_avx2<>+0x03(SB)/1, $1
-DATA rol16_avx2<>+0x04(SB)/1, $6
-DATA rol16_avx2<>+0x05(SB)/1, $7
-DATA rol16_avx2<>+0x06(SB)/1, $4
-DATA rol16_avx2<>+0x07(SB)/1, $5
-DATA rol16_avx2<>+0x08(SB)/1, $10
-DATA rol16_avx2<>+0x09(SB)/1, $11
-DATA rol16_avx2<>+0x0a(SB)/1, $8
-DATA rol16_avx2<>+0x0b(SB)/1, $9
-DATA rol16_avx2<>+0x0c(SB)/1, $14
-DATA rol16_avx2<>+0x0d(SB)/1, $15
-DATA rol16_avx2<>+0x0e(SB)/1, $12
-DATA rol16_avx2<>+0x0f(SB)/1, $13
-DATA rol16_avx2<>+0x10(SB)/1, $2
-DATA rol16_avx2<>+0x11(SB)/1, $3
-DATA rol16_avx2<>+0x12(SB)/1, $0
-DATA rol16_avx2<>+0x13(SB)/1, $1
-DATA rol16_avx2<>+0x14(SB)/1, $6
-DATA rol16_avx2<>+0x15(SB)/1, $7
-DATA rol16_avx2<>+0x16(SB)/1, $4
-DATA rol16_avx2<>+0x17(SB)/1, $5
-DATA rol16_avx2<>+0x18(SB)/1, $10
-DATA rol16_avx2<>+0x19(SB)/1, $11
-DATA rol16_avx2<>+0x1a(SB)/1, $8
-DATA rol16_avx2<>+0x1b(SB)/1, $9
-DATA rol16_avx2<>+0x1c(SB)/1, $14
-DATA rol16_avx2<>+0x1d(SB)/1, $15
-DATA rol16_avx2<>+0x1e(SB)/1, $12
-DATA rol16_avx2<>+0x1f(SB)/1, $13
-GLOBL rol16_avx2<>(SB), RODATA, $32
+DATA rol16<>+0x00(SB)/1, $2
+DATA rol16<>+0x01(SB)/1, $3
+DATA rol16<>+0x02(SB)/1, $0
+DATA rol16<>+0x03(SB)/1, $1
+DATA rol16<>+0x04(SB)/1, $6
+DATA rol16<>+0x05(SB)/1, $7
+DATA rol16<>+0x06(SB)/1, $4
+DATA rol16<>+0x07(SB)/1, $5
+DATA rol16<>+0x08(SB)/1, $10
+DATA rol16<>+0x09(SB)/1, $11
+DATA rol16<>+0x0a(SB)/1, $8
+DATA rol16<>+0x0b(SB)/1, $9
+DATA rol16<>+0x0c(SB)/1, $14
+DATA rol16<>+0x0d(SB)/1, $15
+DATA rol16<>+0x0e(SB)/1, $12
+DATA rol16<>+0x0f(SB)/1, $13
+DATA rol16<>+0x10(SB)/1, $2
+DATA rol16<>+0x11(SB)/1, $3
+DATA rol16<>+0x12(SB)/1, $0
+DATA rol16<>+0x13(SB)/1, $1
+DATA rol16<>+0x14(SB)/1, $6
+DATA rol16<>+0x15(SB)/1, $7
+DATA rol16<>+0x16(SB)/1, $4
+DATA rol16<>+0x17(SB)/1, $5
+DATA rol16<>+0x18(SB)/1, $10
+DATA rol16<>+0x19(SB)/1, $11
+DATA rol16<>+0x1a(SB)/1, $8
+DATA rol16<>+0x1b(SB)/1, $9
+DATA rol16<>+0x1c(SB)/1, $14
+DATA rol16<>+0x1d(SB)/1, $15
+DATA rol16<>+0x1e(SB)/1, $12
+DATA rol16<>+0x1f(SB)/1, $13
+GLOBL rol16<>(SB), RODATA, $32
 
 DATA avx2Init<>+0x00(SB)/8, $0x0
 DATA avx2Init<>+0x08(SB)/8, $0x0
@@ -119,17 +119,15 @@ DATA avx2Inc<>+0x10(SB)/8, $0x2
 DATA avx2Inc<>+0x18(SB)/8, $0x0
 GLOBL avx2Inc<>(SB), RODATA, $32
 
-TEXT ·chacha_20_core_avx2(SB),$0-48
+TEXT ·chacha_20_core_avx2(SB),$0-32
 	MOVQ	out+0(FP),DI
 	MOVQ	in+8(FP),SI
 	MOVQ	in_len+16(FP),DX
-	MOVQ	key+24(FP),CX
-	MOVQ	nonce+32(FP),R8
-	MOVQ	counter+40(FP),R9
+	MOVQ	state+24(FP),CX
 
-	MOVQ	$chacha20_consts_avx2<>(SB),R11
-	MOVQ	$rol8_avx2<>(SB),R12
-	MOVQ	$rol16_avx2<>(SB),R13
+	MOVQ	$chacha20_consts<>(SB),R11
+	MOVQ	$rol8<>(SB),R12
+	MOVQ	$rol16<>(SB),R13
 	MOVQ	$avx2Init<>(SB),R14
 	MOVQ	$avx2Inc<>(SB),R15
 
@@ -140,12 +138,8 @@ TEXT ·chacha_20_core_avx2(SB),$0-48
 	BYTE $0xc4; BYTE $0xe2; BYTE $0x7d; BYTE $0x5a; BYTE $0x01
 	// VBROADCASTI128	16*1(CX),X1
 	BYTE $0xc4; BYTE $0xe2; BYTE $0x7d; BYTE $0x5a; BYTE $0x49; BYTE $0x10
-	// VMOVQ	R9,X2
-	BYTE $0xc4; BYTE $0xc1; BYTE $0xf9; BYTE $0x6e; BYTE $0xd1
-	// VPINSRQ	$1,(R8),X2,X2
-	BYTE $0xc4; BYTE $0xc3; BYTE $0xe9; BYTE $0x22; BYTE $0x10; BYTE $0x01
-	// VPERM2I128	$0,X2,X2,X2
-	BYTE $0xc4; BYTE $0xe3; BYTE $0x6d; BYTE $0x46; BYTE $0xd2; BYTE $0x00
+	// VBROADCASTI128	16*2(CX),X2
+	BYTE $0xc4; BYTE $0xe2; BYTE $0x7d; BYTE $0x5a; BYTE $0x51; BYTE $0x20
 	// VPADDQ	(R14),X2,X2
 	BYTE $0xc4; BYTE $0xc1; BYTE $0x6d; BYTE $0xd4; BYTE $0x16
 
@@ -181,7 +175,7 @@ label2a:
 	// VPADDQ	(R15),X11,X15
 	BYTE $0xc4; BYTE $0x41; BYTE $0x25; BYTE $0xd4; BYTE $0x3f
 
-	MOVQ	$10,AX
+	MOVQ	$10,R8
 
 label1a:
 
@@ -407,7 +401,7 @@ label1a:
 	// VPALIGNR	$4,X15,X15,X15
 	BYTE $0xc4; BYTE $0x43; BYTE $0x05; BYTE $0x0f; BYTE $0xff; BYTE $0x04
 
-	DECQ	AX
+	DECQ	R8
 
 	JNZ	label1a
 
@@ -529,7 +523,7 @@ label2b:
 	// VPADDQ	(R15),X7,X11
 	BYTE $0xc4; BYTE $0x41; BYTE $0x45; BYTE $0xd4; BYTE $0x1f
 
-	MOVQ	$10,AX
+	MOVQ	$10,R8
 
 label1b:
 
@@ -681,7 +675,7 @@ label1b:
 	// VPALIGNR	$4,X11,X11,X11
 	BYTE $0xc4; BYTE $0x43; BYTE $0x25; BYTE $0x0f; BYTE $0xdb; BYTE $0x04
 
-	DECQ	AX
+	DECQ	R8
 
 	JNZ	label1b
 
@@ -765,7 +759,7 @@ label2c:
 	// VMOVDQA	X2,X7
 	BYTE $0xc5; BYTE $0xfd; BYTE $0x6f; BYTE $0xfa
 
-	MOVQ	$10,AX
+	MOVQ	$10,R8
 
 label1c:
 
@@ -843,7 +837,7 @@ label1c:
 	// VPALIGNR	$4,X7,X7,X7
 	BYTE $0xc4; BYTE $0xe3; BYTE $0x45; BYTE $0x0f; BYTE $0xff; BYTE $0x04
 
-	DECQ	AX
+	DECQ	R8
 	JNZ	label1c
 
 	// VPADDD	(R11),X4,X4
@@ -880,7 +874,10 @@ label1c:
 	LEAQ	64*2(DI),DI
 	SUBQ	$128,DX
 	JMP	label2c
+
 label2d:
+	VMOVDQU	X2,16*2(CX)
+
 	VZEROUPPER
 	RET
 
