@@ -65,8 +65,8 @@ func NewDraft(key, nonce []byte) (cipher.Stream, error) {
 type streamAVX struct {
 	state [48]byte
 
-	buffer [128]byte
-	bufPos int
+	backing [128]byte
+	buffer  []byte
 }
 
 func (s *streamAVX) XORKeyStream(dst, src []byte) {
@@ -74,14 +74,13 @@ func (s *streamAVX) XORKeyStream(dst, src []byte) {
 		return
 	}
 
-	if s.bufPos != 0 && s.bufPos != 128 {
-		i := xor.Bytes(dst, s.buffer[s.bufPos:], src)
+	if len(s.buffer) != 0 {
+		i := xor.Bytes(dst, s.buffer, src)
 		for j := 0; j < i; j++ {
-			s.buffer[s.bufPos+j] = 0
+			s.buffer[j] = 0
 		}
 
-		s.bufPos += i
-
+		s.buffer = s.buffer[i:]
 		src = src[i:]
 		dst = dst[i:]
 
@@ -104,20 +103,20 @@ func (s *streamAVX) XORKeyStream(dst, src []byte) {
 	}
 
 	if todo := int(uint(len(src)) &^ -minSize); todo != 0 {
-		copy(s.buffer[:todo], src[len(src)-todo:])
+		copy(s.backing[:todo], src[len(src)-todo:])
 
 		if useAVX2 {
-			chacha_20_core_avx2(&s.buffer[0], &s.buffer[0], 128, &s.state)
+			chacha_20_core_avx2(&s.backing[0], &s.backing[0], 128, &s.state)
 		} else {
-			chacha_20_core_avx(&s.buffer[0], &s.buffer[0], 128, &s.state)
+			chacha_20_core_avx(&s.backing[0], &s.backing[0], 128, &s.state)
 		}
 
-		copy(dst[len(src)-todo:], s.buffer[:todo])
+		copy(dst[len(src)-todo:], s.backing[:todo])
 		for i := 0; i < todo; i++ {
-			s.buffer[i] = 0
+			s.backing[i] = 0
 		}
 
-		s.bufPos = todo
+		s.buffer = s.backing[todo:]
 	}
 }
 
