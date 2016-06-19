@@ -116,7 +116,7 @@ elsif (!$gas)
     $decor="\$L\$";
 }
 
-my @golang_missing_avx=qw/ VPSLLD VPSRLD VBROADCASTI128 VPINSRQ VPADDQ VMOVDQA VPERM2I128 VPADDQ VPADDD VPSHUFB VMOVQ VPALIGNR /;
+my @golang_missing_avx=qw/ VPSLLD VPSRLD VBROADCASTI128 VPINSRQ VPADDQ VMOVDQA VPERM2I128 VPADDQ VPADDD VPSHUFB VMOVQ VPALIGNR VPSLLQ VPSRLQ VPMULUDQ VPUNPCKLQDQ VMOVD VPUNPCKHQDQ VBROADCASTSS VPSRLDQ VPSLLDQ VPINSRB VPSHUFD VPERMQ VPBROADCASTQ VPERMD /;
 my %golang_last_label_id;
 
 my $current_segment;
@@ -304,8 +304,20 @@ my %globals;
 	       $self->{base} = "SB";
                $self->{label} .= "<>";
 	    }
-	    
-	    sprintf "%s%s(%s)",	$self->{asterisk},$self->{label},$self->{base};
+
+	    my $base = $self->{base};
+	    $base =~ s/^(?:[re](ax|bx|cx|dx|di|si|sp)|(r\d+)b?)$/uc($1 or $2)/ge;
+
+	    if (defined($self->{index})) {
+		my $index = $self->{index};
+		$index =~ s/^(?:[re](ax|bx|cx|dx|di|si|sp)|(r\d+)b?)$/uc($1 or $2)/ge;
+
+		sprintf "%s%s(%s)(%s*%d)",$self->{asterisk},
+					$self->{label},$base,
+					$index,$self->{scale};
+	    } else {
+		sprintf "%s%s(%s)",	$self->{asterisk},$self->{label},$base;
+	    }
 	} else {
 	    %szmap = ( b=>"BYTE$PTR", w=>"WORD$PTR", l=>"DWORD$PTR", q=>"QWORD$PTR" );
 
@@ -365,9 +377,10 @@ my %globals;
     	my $self = shift;
 	if ($gas)	{ sprintf "%s%%%s",$self->{asterisk},$self->{value}; }
 	elsif ($golang) {
-	    if ($self->{value} =~ /^[xy]mm([0-9]+)$/) { sprintf "X%s",$1 }
-	    elsif ($self->{value} =~ /^(?:[re](ax|bx|cx|dx|di|si)|(r\d+))$/g) { sprintf "%s",uc($1 or $2) }
-	    else { sprintf "%s%%%s",$self->{asterisk},$self->{value}; }
+	    my $value = $self->{value};
+	    if ($value =~ /^[xy]mm([0-9]+)$/) { sprintf "X%s",$1 }
+	    elsif ($value =~ /^(?:[re](ax|bx|cx|dx|di|si|sp)|(r\d+)b?)$/g) { sprintf "%s",uc($1 or $2) }
+	    else { sprintf "%s%%%s",$self->{asterisk},$value; }
 	} else		{ $self->{value}; }
     }
 }
@@ -770,17 +783,13 @@ while($line=<>) {
             } elsif ($golang) {
 	        $insn = $opcode->out($sz);
 		
-                #if ($insn eq "VMOVQ" && $args[0]->out($sz) =~ /^[a-z0-9]+\+\d+\(.*\)$/i) {
-		#	$insn = "VMOVQ2"
-		#}
-		
-		# # # # #
+                # # # # #
 		if ($insn eq "CMPQ") {
 			@args = reverse @args;
 		}
 		
 		my $argline = join(",", map($_->out($sz), @args));
-                $argline =~ s/\((?:[re](ax|bx|cx|dx|di|si)|(r\d+))\)/"(" . uc($1 or $2) . ")"/ge;
+                $argline =~ s/\((?:[re](ax|bx|cx|dx|di|si|sp)|(r\d+)b?)\)/"(" . uc($1 or $2) . ")"/ge;
 		
 		if ($golang_no_avx && $argline !~ /\((?:SP|FP|SB)\)/ && grep { $insn eq $_ } @golang_missing_avx) {
 		    printf "\t// %s\t%s",$insn,$argline;
