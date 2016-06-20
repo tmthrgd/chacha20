@@ -39,7 +39,7 @@ const (
 	// HNonceSize is the length of HChaCha20 nonces, in bytes.
 	HNonceSize = 16
 	// HChaChaSize is the length of HChaCha20 output, in bytes.
-	HChaChaSize = stateSize * 2
+	HChaChaSize = blockSize / 2
 )
 
 // NewRFC creates and returns a new cipher.Stream. The key argument must be 256
@@ -105,7 +105,7 @@ func NewXChaCha(key, nonce []byte) (cipher.Stream, error) {
 	s.hChaCha20(&subKey)
 
 	// Re-initialize the state using the subkey and the remaining nonce.
-	s.init(subKey[:], nonce[16:])
+	s.init(subKey[:], nonce[HNonceSize:])
 	s.advance()
 	return s, nil
 }
