@@ -77,7 +77,7 @@ var rfcTestVectors = []rfcTestVector{
 	},
 }
 
-func TestChaCha20(t *testing.T) {
+func TestRFCChaCha20(t *testing.T) {
 	t.Parallel()
 
 	switch {
@@ -137,7 +137,7 @@ func TestChaCha20(t *testing.T) {
 	}
 }
 
-func TestBadKeySize(t *testing.T) {
+func TestRFCBadKeySize(t *testing.T) {
 	t.Parallel()
 
 	key := make([]byte, 3)
@@ -150,7 +150,7 @@ func TestBadKeySize(t *testing.T) {
 	}
 }
 
-func TestBadNonceSize(t *testing.T) {
+func TestRFCBadNonceSize(t *testing.T) {
 	t.Parallel()
 
 	key := make([]byte, KeySize)
