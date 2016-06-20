@@ -34,6 +34,12 @@ const (
 	RFCNonceSize = 12
 	// DraftNonceSize is the length of ChaCha20-draft nonces, in bytes.
 	DraftNonceSize = 8
+	// XNonceSize is the length of XChaCha20 nonces, in bytes.
+	XNonceSize = 24
+	// HNonceSize is the length of HChaCha20 nonces, in bytes.
+	HNonceSize = 16
+	// HChaChaSize is the length of HChaCha20 output, in bytes.
+	HChaChaSize = stateSize * 2
 )
 
 // NewRFC creates and returns a new cipher.Stream. The key argument must be 256
@@ -76,10 +82,66 @@ func NewDraft(key []byte, nonce []byte) (cipher.Stream, error) {
 	return s, nil
 }
 
+// NewXChaCha creates and returns a new cipher.Stream. The key argument must be
+// 256 bits long, and the nonce argument must be 192 bits long. The nonce must
+// be randomly generated or only used once. This Stream instance must not be
+// used to encrypt more than 2^70 bytes (~1 zetta byte).
+func NewXChaCha(key, nonce []byte) (cipher.Stream, error) {
+	if len(key) != KeySize {
+		panic("invalid key length")
+	}
+
+	if len(nonce) != XNonceSize {
+		panic("invalid nonce length")
+	}
+
+	s := new(stream)
+
+	// Call HChaCha to derive the subkey using the key and the first 16 bytes
+	// of the nonce.
+	s.init(key, nonce[:HNonceSize])
+
+	var subKey [HChaChaSize]byte
+	s.hChaCha20(&subKey)
+
+	// Re-initialize the state using the subkey and the remaining nonce.
+	s.init(subKey[:], nonce[16:])
+	s.advance()
+	return s, nil
+}
+
+// HChaCha20 produces a 256-bit output block starting from a 512 bit
+// input block where (x0,x1,...,x15) where
+//
+//  * (x0, x1, x2, x3) is the ChaCha20 constant.
+//  * (x4, x5, ... x11) is a 256 bit key.
+//  * (x12, x13, x14, x15) is a 128 bit nonce.
+func HChaCha20(key, nonce []byte, out *[HChaChaSize]byte) {
+	if len(key) != KeySize {
+		panic("invalid key length")
+	}
+
+	if len(nonce) != HNonceSize {
+		panic("invalid nonce length")
+	}
+
+	s := new(stream)
+	s.init(key, nonce)
+	s.hChaCha20(out)
+	return
+}
+
 type stream struct {
 	state  [stateSize]uint32 // the state as an array of 16 32-bit words
 	block  [blockSize]byte   // the keystream as an array of 64 bytes
 	offset int               // the offset of used bytes in block
+}
+
+func (s *stream) hChaCha20(out *[HChaChaSize]byte) {
+	core(&s.state, (*[stateSize]uint32)(unsafe.Pointer(&s.block)), 20, true)
+
+	copy(out[:16], s.block[:16])
+	copy(out[16:], s.block[48:])
 }
 
 func (s *stream) XORKeyStream(dst, src []byte) {
@@ -139,6 +201,13 @@ func (s *stream) init(key []byte, nonce []byte) {
 		s.state[13] = 0
 		s.state[14] = binary.LittleEndian.Uint32(nonce[0:])
 		s.state[15] = binary.LittleEndian.Uint32(nonce[4:])
+	case HNonceSize:
+		// XChaCha20 derives the subkey via HChaCha initialized
+		// with the first 16 bytes of the nonce.
+		s.state[12] = binary.LittleEndian.Uint32(nonce[0:])
+		s.state[13] = binary.LittleEndian.Uint32(nonce[4:])
+		s.state[14] = binary.LittleEndian.Uint32(nonce[8:])
+		s.state[15] = binary.LittleEndian.Uint32(nonce[12:])
 	default:
 		// Never happens, both ctors validate the nonce length.
 		panic("invalid nonce size")

@@ -42,28 +42,35 @@ const (
 
 	// DraftNonceSize is the length of ChaCha20-draft nonces, in bytes.
 	DraftNonceSize = 8
+
+	// XNonceSize is the length of XChaCha20 nonces, in bytes.
+	XNonceSize = 24
 )
 
 var (
 	// ErrInvalidKey is returned when the provided key is not KeySize bytes long.
 	ErrInvalidKey = errors.New("invalid key length")
 
-	// ErrInvalidNonce is returned when the provided nonce is not RFCNonceSize or
-	// DraftNonceSize bytes long.
+	// ErrInvalidNonce is returned when the provided nonce is not RFCNonceSize,
+	// DraftNonceSize or XNonceSize bytes long.
 	ErrInvalidNonce = errors.New("invalid nonce length")
 )
 
 // New creates and returns a new cipher.Stream. The key argument must be 256
-// bits long, and the nonce argument must be either 64 or 96 bits long. The
-// nonce must be randomly generated or used only once. If the nonce argument
-// is 64 bits long, New behaves like NewDraft. If the nonce argument is 96
-// bits long, New behaves like NewRFC.
+// bits long, and the nonce argument must be either 64, 96 or 192 bits long.
+// The nonce must be randomly generated or used only once. If the nonce
+// argument is 64 bits long, New behaves like NewDraft. If the nonce argument
+// is 96 bits long, New behaves like NewRFC. If the nonce argument is 192 bits
+// long New behaves like NewXChaCha.
 //
-// In most cases either NewRFC or NewDraft should be used instead.
+// In most cases either NewRFC, NewDraft or NewXChaCha should be used instead.
 func New(key, nonce []byte) (cipher.Stream, error) {
-	if len(nonce) == RFCNonceSize {
+	switch len(nonce) {
+	case XNonceSize:
+		return NewXChaCha(key, nonce)
+	case RFCNonceSize:
 		return NewRFC(key, nonce)
+	default:
+		return NewDraft(key, nonce)
 	}
-
-	return NewDraft(key, nonce)
 }

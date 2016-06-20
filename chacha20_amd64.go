@@ -62,6 +62,32 @@ func NewDraft(key, nonce []byte) (cipher.Stream, error) {
 	return s, nil
 }
 
+// NewXChaCha creates and returns a new cipher.Stream. The key argument must be
+// 256 bits long, and the nonce argument must be 192 bits long. The nonce must
+// be randomly generated or only used once. This Stream instance must not be
+// used to encrypt more than 2^70 bytes (~1 zetta byte).
+func NewXChaCha(key, nonce []byte) (cipher.Stream, error) {
+	if len(key) != KeySize {
+		return nil, ErrInvalidKey
+	}
+
+	if len(nonce) != XNonceSize {
+		return nil, ErrInvalidNonce
+	}
+
+	if !useAVX && !useAVX2 {
+		return ref.NewXChaCha(key, nonce)
+	}
+
+	var subKey [ref.HChaChaSize]byte
+	ref.HChaCha20(key, nonce[:ref.HNonceSize], &subKey)
+
+	s := new(streamAVX)
+	copy(s.state[:32], subKey[:])
+	copy(s.state[40:], nonce[ref.HNonceSize:])
+	return s, nil
+}
+
 type streamAVX struct {
 	state [48]byte
 

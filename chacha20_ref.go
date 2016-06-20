@@ -44,3 +44,19 @@ func NewDraft(key, nonce []byte) (cipher.Stream, error) {
 
 	return ref.NewDraft(key, nonce)
 }
+
+// NewXChaCha creates and returns a new cipher.Stream. The key argument must be
+// 256 bits long, and the nonce argument must be 192 bits long. The nonce must
+// be randomly generated or only used once. This Stream instance must not be
+// used to encrypt more than 2^70 bytes (~1 zetta byte).
+func NewXChaCha(key, nonce []byte) (cipher.Stream, error) {
+	if len(key) != KeySize {
+		return nil, ErrInvalidKey
+	}
+
+	if len(nonce) != XNonceSize {
+		return nil, ErrInvalidNonce
+	}
+
+	return ref.NewXChaCha(key, nonce)
+}
