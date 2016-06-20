@@ -19,7 +19,7 @@ var useAVX, useAVX2 = hasAVX()
 // NewRFC creates and returns a new cipher.Stream. The key argument must be 256
 // bits long, and the nonce argument must be 96 bits long. The nonce must be
 // randomly generated or used only once. This Stream instance must not be used
-// to encrypt more than 2^32 bytes (256 gigabytes).
+// to encrypt more than 2^38 bytes (256 gigabytes).
 func NewRFC(key, nonce []byte) (cipher.Stream, error) {
 	if len(key) != KeySize {
 		return nil, ErrInvalidKey
