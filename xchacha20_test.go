@@ -11,6 +11,7 @@ package chacha20
 
 import (
 	"bytes"
+	"crypto/cipher"
 	"math/rand"
 	"reflect"
 	"testing"
@@ -63,22 +64,11 @@ var xTestVectors = []xTestVector{
 	},
 }
 
-func TestXChaCha20(t *testing.T) {
-	t.Parallel()
-
-	switch {
-	case useAVX2:
-		t.Log("testing AVX2 implementation")
-	case useAVX:
-		t.Log("testing AVX implementation")
-	default:
-		t.Log("testing Go implementation")
-	}
-
+func testXChaCha20(t *testing.T, newXChaCha func(key, nonce []byte) (cipher.Stream, error)) {
 	for i, vector := range xTestVectors {
 		t.Logf("Running test vector %d", i)
 
-		c, err := NewXChaCha(vector.key, vector.nonce)
+		c, err := newXChaCha(vector.key, vector.nonce)
 		if err != nil {
 			t.Error(err)
 			continue
@@ -101,6 +91,27 @@ func TestXChaCha20(t *testing.T) {
 			}
 		}
 	}
+}
+
+func TestXChaCha20(t *testing.T) {
+	t.Parallel()
+
+	switch {
+	case useAVX2:
+		t.Log("testing AVX2 implementation")
+	case useAVX:
+		t.Log("testing AVX implementation")
+	default:
+		t.Skip("only have reference implementation")
+	}
+
+	testXChaCha20(t, NewXChaCha)
+}
+
+func TestXChaCha20Go(t *testing.T) {
+	t.Parallel()
+
+	testXChaCha20(t, ref.NewXChaCha)
 }
 
 func TestXBadKeySize(t *testing.T) {

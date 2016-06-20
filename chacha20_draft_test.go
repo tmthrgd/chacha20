@@ -11,6 +11,7 @@ package chacha20
 
 import (
 	"bytes"
+	"crypto/cipher"
 	"encoding/hex"
 	"fmt"
 	"math/rand"
@@ -19,6 +20,7 @@ import (
 	"testing/quick"
 
 	codahale "github.com/codahale/chacha20"
+	"github.com/tmthrgd/chacha20/internal/ref"
 )
 
 // stolen from https://tools.ietf.org/html/draft-strombergson-chacha-test-vectors-01
@@ -248,18 +250,7 @@ var draftTestVectors = []draftTestVector{
 	},
 }
 
-func TestDraftChaCha20(t *testing.T) {
-	t.Parallel()
-
-	switch {
-	case useAVX2:
-		t.Log("testing AVX2 implementation")
-	case useAVX:
-		t.Log("testing AVX implementation")
-	default:
-		t.Log("testing Go implementation")
-	}
-
+func testDraftChaCha20(t *testing.T, newDraft func(key, nonce []byte) (cipher.Stream, error)) {
 	for i, vector := range draftTestVectors {
 		if vector.rounds != 20 {
 			continue
@@ -277,7 +268,7 @@ func TestDraftChaCha20(t *testing.T) {
 			t.Error(err)
 		}
 
-		c, err := NewDraft(key, nonce)
+		c, err := newDraft(key, nonce)
 		if err != nil {
 			t.Error(err)
 			continue
@@ -305,6 +296,27 @@ func TestDraftChaCha20(t *testing.T) {
 			}
 		}
 	}
+}
+
+func TestDraftChaCha20(t *testing.T) {
+	t.Parallel()
+
+	switch {
+	case useAVX2:
+		t.Log("testing AVX2 implementation")
+	case useAVX:
+		t.Log("testing AVX implementation")
+	default:
+		t.Skip("only have reference implementation")
+	}
+
+	testDraftChaCha20(t, NewDraft)
+}
+
+func TestDraftChaCha20Go(t *testing.T) {
+	t.Parallel()
+
+	testDraftChaCha20(t, ref.NewDraft)
 }
 
 func TestDraftBadKeySize(t *testing.T) {

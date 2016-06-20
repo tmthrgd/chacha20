@@ -11,6 +11,7 @@ package chacha20
 
 import (
 	"bytes"
+	"crypto/cipher"
 	"encoding/hex"
 	"fmt"
 	"math/rand"
@@ -77,18 +78,7 @@ var rfcTestVectors = []rfcTestVector{
 	},
 }
 
-func TestRFCChaCha20(t *testing.T) {
-	t.Parallel()
-
-	switch {
-	case useAVX2:
-		t.Log("testing AVX2 implementation")
-	case useAVX:
-		t.Log("testing AVX implementation")
-	default:
-		t.Log("testing Go implementation")
-	}
-
+func testRFCChaCha20(t *testing.T, newRFC func(key, nonce []byte) (cipher.Stream, error)) {
 	for i, vector := range rfcTestVectors {
 		t.Logf("Running test vector %d", i)
 
@@ -102,7 +92,7 @@ func TestRFCChaCha20(t *testing.T) {
 			t.Error(err)
 		}
 
-		c, err := NewRFC(key, nonce)
+		c, err := newRFC(key, nonce)
 		if err != nil {
 			t.Error(err)
 			continue
@@ -135,6 +125,27 @@ func TestRFCChaCha20(t *testing.T) {
 			}
 		}
 	}
+}
+
+func TestRFCChaCha20(t *testing.T) {
+	t.Parallel()
+
+	switch {
+	case useAVX2:
+		t.Log("testing AVX2 implementation")
+	case useAVX:
+		t.Log("testing AVX implementation")
+	default:
+		t.Skip("only have reference implementation")
+	}
+
+	testRFCChaCha20(t, NewRFC)
+}
+
+func TestRFCChaCha20Go(t *testing.T) {
+	t.Parallel()
+
+	testRFCChaCha20(t, ref.NewRFC)
 }
 
 func TestRFCBadKeySize(t *testing.T) {
