@@ -27,7 +27,7 @@ func benchmarkStream(b *testing.B, c cipher.Stream) {
 	}
 }
 
-func BenchmarkDraftChaCha20Codahale(b *testing.B) {
+func BenchmarkChaCha20Codahale(b *testing.B) {
 	key := make([]byte, codahale.KeySize)
 	nonce := make([]byte, codahale.NonceSize)
 	c, _ := codahale.New(key, nonce)
@@ -35,7 +35,7 @@ func BenchmarkDraftChaCha20Codahale(b *testing.B) {
 	benchmarkStream(b, c)
 }
 
-func BenchmarkRFCChaCha20Go(b *testing.B) {
+func BenchmarkChaCha20Go(b *testing.B) {
 	key := make([]byte, KeySize)
 	nonce := make([]byte, RFCNonceSize)
 	c, _ := ref.NewRFC(key, nonce)
@@ -43,26 +43,10 @@ func BenchmarkRFCChaCha20Go(b *testing.B) {
 	benchmarkStream(b, c)
 }
 
-func BenchmarkDraftChaCha20Go(b *testing.B) {
-	key := make([]byte, KeySize)
-	nonce := make([]byte, DraftNonceSize)
-	c, _ := ref.NewDraft(key, nonce)
-
-	benchmarkStream(b, c)
-}
-
-func BenchmarkRFCChaCha20(b *testing.B) {
+func BenchmarkChaCha20(b *testing.B) {
 	key := make([]byte, KeySize)
 	nonce := make([]byte, RFCNonceSize)
 	c, _ := NewRFC(key, nonce)
-
-	benchmarkStream(b, c)
-}
-
-func BenchmarkDraftChaCha20(b *testing.B) {
-	key := make([]byte, KeySize)
-	nonce := make([]byte, DraftNonceSize)
-	c, _ := NewDraft(key, nonce)
 
 	benchmarkStream(b, c)
 }
