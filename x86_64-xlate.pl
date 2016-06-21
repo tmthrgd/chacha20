@@ -116,7 +116,7 @@ elsif (!$gas)
     $decor="\$L\$";
 }
 
-my @golang_missing_avx=qw/ VPSLLD VPSRLD VBROADCASTI128 VPINSRQ VPADDQ VMOVDQA VPERM2I128 VPADDQ VPADDD VPSHUFB VMOVQ VPALIGNR VPSLLQ VPSRLQ VPMULUDQ VPUNPCKLQDQ VMOVD VPUNPCKHQDQ VBROADCASTSS VPSRLDQ VPSLLDQ VPINSRB VPSHUFD VPERMQ VPBROADCASTQ VPERMD /;
+my @golang_missing_avx=qw/ VPSLLD VPSRLD VBROADCASTI128 VPINSRQ VPADDQ VMOVDQA VPERM2I128 VPADDQ VPADDD VPSHUFB VMOVQ VPALIGNR VPSLLQ VPSRLQ VPMULUDQ VPUNPCKLQDQ VMOVD VPUNPCKHQDQ VBROADCASTSS VPSRLDQ VPSLLDQ VPINSRB VPSHUFD VPERMQ VPBROADCASTQ VPERMD MOVDQU SHRDQ SHLDQ MOVZXB /;
 my %golang_last_label_id;
 
 my $current_segment;
@@ -175,8 +175,18 @@ my %globals;
 		"$self->{op}$self->{sz}";
 	    }
 	} elsif ($golang) {
-	    if (($self->{op} eq "mov" || $self->{op} eq "dec" || $self->{op} eq "sub" || $self->{op} eq "cmp" || $self->{op} eq "lea") && $self->{sz} eq "") {
+	    if (($self->{op} eq "mov" || $self->{op} eq "dec" || $self->{op} eq "sub" || $self->{op} eq "cmp" || $self->{op} eq "lea" || $self->{op} eq "imul") && $self->{sz} eq "") {
 	        $self->{sz} = "q";
+	    }
+
+	    if ($self->{op} eq "imu" && $self->{sz} eq "l") {
+	        $self->{op} = "imul";
+	        $self->{sz} = "q";
+	    }
+
+	    if ($self->{op} eq "cmovc" && $self->{sz} eq "q") {
+	        $self->{op} = "CMOVQCS";
+	        $self->{sz} = "";
 	    }
 	    
 	    if ($self->{op} eq "vmovdqa16" || $self->{op} eq "vmovdqa0") {
@@ -745,6 +755,7 @@ while($line=<>) {
 
     #$line =~ s|[#!].*$||;	# get rid of asm-style comments...
     $line =~ s|^(?:(?!//).)*\K[#!](?!include).*$||;	# get rid of asm-style comments...
+    $line =~ s|^##*$||; 	# ... and asm-style comments...
     $line =~ s|/\*.*\*/||;	# ... and C-style comments...
     $line =~ s|^\s+||;		# ... and skip white spaces in beginning
 
