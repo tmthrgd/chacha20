@@ -13,6 +13,8 @@ import (
 	"github.com/tmthrgd/chacha20/internal/ref"
 )
 
+const useAVX, useAVX2 = false, false
+
 // NewRFC creates and returns a new cipher.Stream. The key argument must be 256
 // bits long, and the nonce argument must be 96 bits long. The nonce must be
 // randomly generated or used only once. This Stream instance must not be used
