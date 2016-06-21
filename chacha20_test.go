@@ -32,7 +32,6 @@ func mustHexDecode(v string) []byte {
 	return b
 }
 
-// stolen from https://tools.ietf.org/html/draft-strombergson-chacha-test-vectors-01
 type testVector struct {
 	key       []byte
 	nonce     []byte
@@ -40,6 +39,7 @@ type testVector struct {
 	counter   uint64
 }
 
+// stolen from https://tools.ietf.org/html/rfc7539
 var rfcTestVectors = []testVector{
 	testVector{
 		mustHexDecode("0000000000000000000000000000000000000000000000000000000000000000"),
@@ -88,6 +88,7 @@ var rfcTestVectors = []testVector{
 	},
 }
 
+// stolen from https://tools.ietf.org/html/draft-strombergson-chacha-test-vectors-01
 var draftTestVectors = []testVector{
 	testVector{
 		mustHexDecode("0000000000000000000000000000000000000000000000000000000000000000"),
@@ -163,6 +164,7 @@ var draftTestVectors = []testVector{
 	},
 }
 
+// stolen from https://github.com/codahale/chacha20/blob/master/chacha20_test.go
 var xTestVectors = []testVector{
 	testVector{
 		[]byte{
