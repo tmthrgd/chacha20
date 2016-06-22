@@ -341,6 +341,10 @@ func TestXBadNonceSize(t *testing.T) {
 	testBadSize(t, NewXChaCha, KeySize, 3, ErrInvalidNonce)
 }
 
+func TestNewBadNonceSize(t *testing.T) {
+	testBadSize(t, New, KeySize, 3, ErrInvalidNonce)
+}
+
 func testEqual(t *testing.T, new1, new2 func(key, nonce []byte) (cipher.Stream, error), noncesize, calls int, label1, label2 string) {
 	t.Parallel()
 
@@ -440,6 +444,103 @@ func TestXEqualOneShotGo(t *testing.T) {
 
 func TestXEqualMultiUseGo(t *testing.T) {
 	testEqual(t, ref.NewXChaCha, codahale.NewXChaCha, XNonceSize, 5, "tmthrgd/chacha20/internal/ref", "codahale/chacha20")
+}
+
+func testNewNewVar(t *testing.T, newVariant func(key, nonce []byte) (cipher.Stream, error), nonceSize int) {
+	var key [KeySize]byte
+	nonce := make([]byte, nonceSize)
+
+	c1, err := New(key[:], nonce)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	c2, err := newVariant(key[:], nonce)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var block1 [64]byte
+	c1.XORKeyStream(block1[:], block1[:])
+
+	var block2 [64]byte
+	c2.XORKeyStream(block2[:], block2[:])
+
+	if !bytes.Equal(block1[:], block2[:]) {
+		t.Error("New returned incorrect cipher")
+	}
+}
+
+func TestNewNewRFC(t *testing.T) {
+	testNewNewVar(t, NewRFC, RFCNonceSize)
+}
+
+func TestNewNewDraft(t *testing.T) {
+	testNewNewVar(t, NewDraft, DraftNonceSize)
+}
+
+func TestNewNewXChaCha(t *testing.T) {
+	testNewNewVar(t, NewXChaCha, XNonceSize)
+}
+
+func TestXOREmptyKeyStream(t *testing.T) {
+	var key [KeySize]byte
+	var nonce [RFCNonceSize]byte
+
+	c, err := NewRFC(key[:], nonce[:])
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer func() {
+		if err := recover(); err != nil {
+			t.Errorf("XORKeyStream caused panic on empty src")
+		}
+	}()
+
+	var out [0]byte
+	c.XORKeyStream(out[:], out[:0])
+}
+
+func TestXORNoExtraKeyStream(t *testing.T) {
+	var key [KeySize]byte
+	var nonce [RFCNonceSize]byte
+
+	c, err := NewRFC(key[:], nonce[:])
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var out, zero [167]byte
+	c.XORKeyStream(out[:], out[:153])
+
+	if bytes.Equal(out[:153], zero[:153]) {
+		t.Error("XORKeyStream did not update partial block")
+	}
+
+	if !bytes.Equal(out[153:], zero[153:]) {
+		t.Error("XORKeyStream updated past len(src)")
+	}
+}
+
+func TestXORKeyStreamBufferEmpty(t *testing.T) {
+	var key [KeySize]byte
+	var nonce [RFCNonceSize]byte
+
+	c, err := NewRFC(key[:], nonce[:])
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer func() {
+		if err := recover(); err != nil {
+			t.Errorf("XORKeyStream caused panic on empty after buffer fill")
+		}
+	}()
+
+	var out [256]byte
+	c.XORKeyStream(out[:], out[:224])
+	c.XORKeyStream(out[224:], out[224:])
 }
 
 func ExampleNewRFC() {
