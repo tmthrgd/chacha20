@@ -116,7 +116,7 @@ elsif (!$gas)
     $decor="\$L\$";
 }
 
-my @golang_missing_avx=qw/ VPSLLD VPSRLD VBROADCASTI128 VPINSRQ VPADDQ VMOVDQA VPERM2I128 VPADDQ VPADDD VPSHUFB VMOVQ VPALIGNR VPSLLQ VPSRLQ VPMULUDQ VPUNPCKLQDQ VMOVD VPUNPCKHQDQ VBROADCASTSS VPSRLDQ VPSLLDQ VPINSRB VPSHUFD VPERMQ VPBROADCASTQ VPERMD MOVDQU SHRDQ SHLDQ MOVZXB /;
+my @golang_missing_avx=qw/ VPSLLD VPSRLD VBROADCASTI128 VPINSRQ VPADDQ VMOVDQA VPERM2I128 VPADDQ VPADDD VPSHUFB VMOVQ VPALIGNR VPSLLQ VPSRLQ VPMULUDQ VPUNPCKLQDQ VMOVD VPUNPCKHQDQ VBROADCASTSS VPSRLDQ VPSLLDQ VPINSRB VPSHUFD VPERMQ VPBROADCASTQ VPERMD MOVDQU SHRDQ SHLDQ MOVZXB MOVDQA PSLLD PSRLD PUNPCKHDQ PUNPCKLDQ /;
 my %golang_last_label_id;
 
 my $current_segment;
@@ -187,6 +187,11 @@ my %globals;
 	    if ($self->{op} eq "cmovc" && $self->{sz} eq "q") {
 	        $self->{op} = "CMOVQCS";
 	        $self->{sz} = "";
+	    }
+
+	    if ($self->{op} eq "movd" && $self->{sz} eq "q") {
+	        $self->{op} = "mov";
+	        $self->{sz} = "d";
 	    }
 	    
 	    if ($self->{op} eq "vmovdqa16" || $self->{op} eq "vmovdqa0") {
@@ -316,11 +321,11 @@ my %globals;
 	    }
 
 	    my $base = $self->{base};
-	    $base =~ s/^(?:[re](ax|bx|cx|dx|di|si|sp)|(r\d+)b?)$/uc($1 or $2)/ge;
+	    $base =~ s/^(?:[re]([abcd]x|[ds]i|[sb]p)|(r\d+)[bd]?|([abcd][lh]))$/uc($1 or $2 or $3)/ge;
 
 	    if (defined($self->{index})) {
 		my $index = $self->{index};
-		$index =~ s/^(?:[re](ax|bx|cx|dx|di|si|sp)|(r\d+)b?)$/uc($1 or $2)/ge;
+		$index =~ s/^(?:[re]([abcd]x|[ds]i|[sb]p)|(r\d+)[bd]?|([abcd][lh]))$/uc($1 or $2 or $3)/ge;
 
 		sprintf "%s%s(%s)(%s*%d)",$self->{asterisk},
 					$self->{label},$base,
@@ -389,7 +394,7 @@ my %globals;
 	elsif ($golang) {
 	    my $value = $self->{value};
 	    if ($value =~ /^[xy]mm([0-9]+)$/) { sprintf "X%s",$1 }
-	    elsif ($value =~ /^(?:[re](ax|bx|cx|dx|di|si|sp)|(r\d+)b?)$/g) { sprintf "%s",uc($1 or $2) }
+	    elsif ($value =~ /^(?:[re]([abcd]x|[ds]i|[sb]p)|(r\d+)[bd]?|([abcd][lh]))$/g) { uc($1 or $2 or $3) }
 	    else { sprintf "%s%%%s",$self->{asterisk},$value; }
 	} else		{ $self->{value}; }
     }
@@ -800,7 +805,7 @@ while($line=<>) {
 		}
 		
 		my $argline = join(",", map($_->out($sz), @args));
-                $argline =~ s/\((?:[re](ax|bx|cx|dx|di|si|sp)|(r\d+)b?)\)/"(" . uc($1 or $2) . ")"/ge;
+                $argline =~ s/\((?:[re]([abcd]x|[ds]i|[sb]p)|(r\d+)[bd]?|([abcd][lh]))\)/"(" . uc($1 or $2 or $3) . ")"/ge;
 		
 		if ($golang_no_avx && $argline !~ /\((?:SP|FP|SB)\)/ && grep { $insn eq $_ } @golang_missing_avx) {
 		    printf "\t// %s\t%s",$insn,$argline;

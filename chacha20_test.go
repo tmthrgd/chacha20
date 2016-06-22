@@ -243,6 +243,8 @@ func TestRFCChaCha20(t *testing.T) {
 		t.Log("testing AVX2 implementation")
 	case useAVX:
 		t.Log("testing AVX implementation")
+	case !useRef:
+		t.Log("testing x64 implementation")
 	default:
 		t.Skip("only have reference implementation")
 	}
@@ -260,6 +262,8 @@ func TestDraftChaCha20(t *testing.T) {
 		t.Log("testing AVX2 implementation")
 	case useAVX:
 		t.Log("testing AVX implementation")
+	case !useRef:
+		t.Log("testing x64 implementation")
 	default:
 		t.Skip("only have reference implementation")
 	}
@@ -277,6 +281,8 @@ func TestXChaCha20(t *testing.T) {
 		t.Log("testing AVX2 implementation")
 	case useAVX:
 		t.Log("testing AVX implementation")
+	case !useRef:
+		t.Log("testing x64 implementation")
 	default:
 		t.Skip("only have reference implementation")
 	}

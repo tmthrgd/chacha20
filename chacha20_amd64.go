@@ -14,6 +14,8 @@ import (
 	"github.com/tmthrgd/chacha20/internal/xor"
 )
 
+const useRef = false
+
 var useAVX, useAVX2 = hasAVX()
 
 // NewRFC creates and returns a new cipher.Stream. The key argument must be 256
@@ -29,11 +31,7 @@ func NewRFC(key, nonce []byte) (cipher.Stream, error) {
 		return nil, ErrInvalidNonce
 	}
 
-	if !useAVX && !useAVX2 {
-		return ref.NewRFC(key, nonce)
-	}
-
-	s := new(streamAVX)
+	s := new(stream)
 	copy(s.state[:32], key)
 	copy(s.state[36:], nonce)
 	return s, nil
@@ -52,11 +50,7 @@ func NewDraft(key, nonce []byte) (cipher.Stream, error) {
 		return nil, ErrInvalidNonce
 	}
 
-	if !useAVX && !useAVX2 {
-		return ref.NewDraft(key, nonce)
-	}
-
-	s := new(streamAVX)
+	s := new(stream)
 	copy(s.state[:32], key)
 	copy(s.state[40:], nonce)
 	return s, nil
@@ -75,27 +69,23 @@ func NewXChaCha(key, nonce []byte) (cipher.Stream, error) {
 		return nil, ErrInvalidNonce
 	}
 
-	if !useAVX && !useAVX2 {
-		return ref.NewXChaCha(key, nonce)
-	}
-
 	var subKey [ref.HChaChaSize]byte
 	ref.HChaCha20(key, nonce[:ref.HNonceSize], &subKey)
 
-	s := new(streamAVX)
+	s := new(stream)
 	copy(s.state[:32], subKey[:])
 	copy(s.state[40:], nonce[ref.HNonceSize:])
 	return s, nil
 }
 
-type streamAVX struct {
+type stream struct {
 	state [48]byte
 
 	backing [128]byte
 	buffer  []byte
 }
 
-func (s *streamAVX) XORKeyStream(dst, src []byte) {
+func (s *stream) XORKeyStream(dst, src []byte) {
 	if len(src) == 0 {
 		return
 	}
@@ -115,10 +105,13 @@ func (s *streamAVX) XORKeyStream(dst, src []byte) {
 		}
 	}
 
-	if useAVX2 {
+	switch {
+	case useAVX2:
 		chacha_20_core_avx2(&dst[0], &src[0], uint64(len(src)), &s.state)
-	} else {
+	case useAVX:
 		chacha_20_core_avx(&dst[0], &src[0], uint64(len(src)), &s.state)
+	default:
+		chacha_20_core_x64(&dst[0], &src[0], uint64(len(src)), &s.state)
 	}
 
 	var minSize uint
@@ -131,10 +124,13 @@ func (s *streamAVX) XORKeyStream(dst, src []byte) {
 	if todo := int(uint(len(src)) &^ -minSize); todo != 0 {
 		copy(s.backing[:todo], src[len(src)-todo:])
 
-		if useAVX2 {
+		switch {
+		case useAVX2:
 			chacha_20_core_avx2(&s.backing[0], &s.backing[0], 128, &s.state)
-		} else {
+		case useAVX:
 			chacha_20_core_avx(&s.backing[0], &s.backing[0], 128, &s.state)
+		default:
+			chacha_20_core_x64(&s.backing[0], &s.backing[0], 128, &s.state)
 		}
 
 		copy(dst[len(src)-todo:], s.backing[:todo])
@@ -146,12 +142,17 @@ func (s *streamAVX) XORKeyStream(dst, src []byte) {
 	}
 }
 
+//go:generate perl chacha20_x64.pl golang-no-avx chacha20_x64_amd64.s
 //go:generate perl chacha20_avx.pl golang-no-avx chacha20_avx_amd64.s
 //go:generate perl chacha20_avx2.pl golang-no-avx chacha20_avx2_amd64.s
 
 // This function is implemented in avx_amd64.s
 //go:noescape
 func hasAVX() (avx, avx2 bool)
+
+// This function is implemented in chacha20_avx_amd64.s
+//go:noescape
+func chacha_20_core_x64(out, in *byte, in_len uint64, state *[48]byte)
 
 // This function is implemented in chacha20_avx_amd64.s
 //go:noescape
