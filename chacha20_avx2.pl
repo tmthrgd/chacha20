@@ -585,8 +585,8 @@ $code =~ s/\`([^\`]*)\`/eval($1)/gem;
 
 if ($flavour =~ /^golang/) {
 	$code =~ s/.chacha20_consts\(%rip\)/(%r11)/g;
-	$code =~ s/.rol8\(%rip\)/0(%r12)/g;
-	$code =~ s/.rol16\(%rip\)/32(%r13)/g;
+	$code =~ s/.rol8\(%rip\)/(%r12)/g;
+	$code =~ s/.rol16\(%rip\)/(%r13)/g;
 	$code =~ s/.avx2Init\(%rip\)/(%r14)/g;
 	$code =~ s/.avx2Inc\(%rip\)/(%r15)/g;
 }
