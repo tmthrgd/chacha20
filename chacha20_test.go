@@ -203,8 +203,6 @@ var xTestVectors = []testVector{
 }
 
 func testChaCha20(t *testing.T, newChaCha20 func(key, nonce []byte) (cipher.Stream, error), vectors []testVector) {
-	t.Parallel()
-
 	for i, vector := range vectors {
 		t.Logf("Running test vector %d", i)
 
@@ -237,57 +235,90 @@ func testChaCha20(t *testing.T, newChaCha20 func(key, nonce []byte) (cipher.Stre
 	}
 }
 
-func TestRFCChaCha20(t *testing.T) {
-	switch {
-	case useAVX2:
-		t.Log("testing AVX2 implementation")
-	case useAVX:
-		t.Log("testing AVX implementation")
-	case !useRef:
-		t.Log("testing x64 implementation")
-	default:
-		t.Skip("only have reference implementation")
+func testChaCha20x64(t *testing.T, newChaCha20 func(key, nonce []byte) (cipher.Stream, error), vectors []testVector) {
+	if useRef {
+		t.Skip("skipping: do not have x64 implementation")
 	}
 
-	testChaCha20(t, NewRFC, rfcTestVectors)
+	oldAVX, oldAVX2 := useAVX, useAVX2
+	useAVX, useAVX2 = false, false
+	defer func() {
+		useAVX, useAVX2 = oldAVX, oldAVX2
+	}()
+
+	testChaCha20(t, newChaCha20, vectors)
+}
+
+func testChaCha20AVX(t *testing.T, newChaCha20 func(key, nonce []byte) (cipher.Stream, error), vectors []testVector) {
+	if !useAVX {
+		t.Skip("skipping: do not have AVX implementation")
+	}
+
+	oldAVX, oldAVX2 := useAVX, useAVX2
+	useAVX, useAVX2 = true, false
+	defer func() {
+		useAVX, useAVX2 = oldAVX, oldAVX2
+	}()
+
+	testChaCha20(t, newChaCha20, vectors)
+}
+
+func testChaCha20AVX2(t *testing.T, newChaCha20 func(key, nonce []byte) (cipher.Stream, error), vectors []testVector) {
+	if !useAVX2 {
+		t.Skip("skipping: do not have AVX2 implementation")
+	}
+
+	oldAVX, oldAVX2 := useAVX, useAVX2
+	useAVX, useAVX2 = false, true
+	defer func() {
+		useAVX, useAVX2 = oldAVX, oldAVX2
+	}()
+
+	testChaCha20(t, newChaCha20, vectors)
+}
+
+func TestRFCChaCha20x64(t *testing.T) {
+	testChaCha20x64(t, NewRFC, rfcTestVectors)
+}
+
+func TestRFCChaCha20AVX(t *testing.T) {
+	testChaCha20AVX(t, NewRFC, rfcTestVectors)
+}
+
+func TestRFCChaCha20AVX2(t *testing.T) {
+	testChaCha20AVX2(t, NewRFC, rfcTestVectors)
 }
 
 func TestRFCChaCha20Go(t *testing.T) {
 	testChaCha20(t, ref.NewRFC, rfcTestVectors)
 }
 
-func TestDraftChaCha20(t *testing.T) {
-	switch {
-	case useAVX2:
-		t.Log("testing AVX2 implementation")
-	case useAVX:
-		t.Log("testing AVX implementation")
-	case !useRef:
-		t.Log("testing x64 implementation")
-	default:
-		t.Skip("only have reference implementation")
-	}
+func TestDraftChaCha20x64(t *testing.T) {
+	testChaCha20x64(t, NewDraft, draftTestVectors)
+}
 
-	testChaCha20(t, NewDraft, draftTestVectors)
+func TestDraftChaCha20AVX(t *testing.T) {
+	testChaCha20AVX(t, NewDraft, draftTestVectors)
+}
+
+func TestDraftChaCha20AVX2(t *testing.T) {
+	testChaCha20AVX2(t, NewDraft, draftTestVectors)
 }
 
 func TestDraftChaCha20Go(t *testing.T) {
 	testChaCha20(t, ref.NewDraft, draftTestVectors)
 }
 
-func TestXChaCha20(t *testing.T) {
-	switch {
-	case useAVX2:
-		t.Log("testing AVX2 implementation")
-	case useAVX:
-		t.Log("testing AVX implementation")
-	case !useRef:
-		t.Log("testing x64 implementation")
-	default:
-		t.Skip("only have reference implementation")
-	}
+func TestXChaCha20x64(t *testing.T) {
+	testChaCha20x64(t, NewXChaCha, xTestVectors)
+}
 
-	testChaCha20(t, NewXChaCha, xTestVectors)
+func TestXChaCha20AVX(t *testing.T) {
+	testChaCha20AVX(t, NewXChaCha, xTestVectors)
+}
+
+func TestXChaCha20AVX2(t *testing.T) {
+	testChaCha20AVX2(t, NewXChaCha, xTestVectors)
 }
 
 func TestXChaCha20Go(t *testing.T) {
