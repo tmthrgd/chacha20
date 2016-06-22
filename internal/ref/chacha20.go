@@ -110,27 +110,6 @@ func NewXChaCha(key, nonce []byte) (cipher.Stream, error) {
 	return s, nil
 }
 
-// HChaCha20 produces a 256-bit output block starting from a 512 bit
-// input block where (x0,x1,...,x15) where
-//
-//  * (x0, x1, x2, x3) is the ChaCha20 constant.
-//  * (x4, x5, ... x11) is a 256 bit key.
-//  * (x12, x13, x14, x15) is a 128 bit nonce.
-func HChaCha20(key, nonce []byte, out *[HChaChaSize]byte) {
-	if len(key) != KeySize {
-		panic("invalid key length")
-	}
-
-	if len(nonce) != HNonceSize {
-		panic("invalid nonce length")
-	}
-
-	s := new(stream)
-	s.init(key, nonce)
-	s.hChaCha20(out)
-	return
-}
-
 type stream struct {
 	state  [stateSize]uint32 // the state as an array of 16 32-bit words
 	block  [blockSize]byte   // the keystream as an array of 64 bytes

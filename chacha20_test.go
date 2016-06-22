@@ -442,16 +442,6 @@ func TestXEqualMultiUseGo(t *testing.T) {
 	testEqual(t, ref.NewXChaCha, codahale.NewXChaCha, XNonceSize, 5, "tmthrgd/chacha20/internal/ref", "codahale/chacha20")
 }
 
-func BenchmarkHChaChaGo(b *testing.B) {
-	key := make([]byte, KeySize)
-	nonce := make([]byte, ref.HNonceSize)
-	var block [ref.HChaChaSize]byte
-
-	for i := 0; i < b.N; i++ {
-		ref.HChaCha20(key, nonce, &block)
-	}
-}
-
 func ExampleNewRFC() {
 	key, err := hex.DecodeString("60143a3d7c7137c3622d490e7dbb85859138d198d9c648960e186412a6250722")
 	if err != nil {

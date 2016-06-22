@@ -10,8 +10,12 @@ package chacha20
 import (
 	"crypto/cipher"
 
-	"github.com/tmthrgd/chacha20/internal/ref"
 	"github.com/tmthrgd/chacha20/internal/xor"
+)
+
+const (
+	hNonceSize  = 16
+	hChaChaSize = 32
 )
 
 const useRef = false
@@ -69,12 +73,18 @@ func NewXChaCha(key, nonce []byte) (cipher.Stream, error) {
 		return nil, ErrInvalidNonce
 	}
 
-	var subKey [ref.HChaChaSize]byte
-	ref.HChaCha20(key, nonce[:ref.HNonceSize], &subKey)
+	var hKey [KeySize]byte
+	copy(hKey[:], key)
+
+	var hNonce [hNonceSize]byte
+	copy(hNonce[:], nonce[:hNonceSize])
+
+	var subKey [hChaChaSize]byte
+	hchacha_20_x64(&hKey, &hNonce, &subKey)
 
 	s := new(stream)
 	copy(s.state[:32], subKey[:])
-	copy(s.state[40:], nonce[ref.HNonceSize:])
+	copy(s.state[40:], nonce[hNonceSize:])
 	return s, nil
 }
 
@@ -145,6 +155,7 @@ func (s *stream) XORKeyStream(dst, src []byte) {
 //go:generate perl chacha20_x64.pl golang-no-avx chacha20_x64_amd64.s
 //go:generate perl chacha20_avx.pl golang-no-avx chacha20_avx_amd64.s
 //go:generate perl chacha20_avx2.pl golang-no-avx chacha20_avx2_amd64.s
+//go:generate perl hchacha20_x64.pl golang-no-avx hchacha20_x64_amd64.s
 
 // This function is implemented in avx_amd64.s
 //go:noescape
@@ -161,3 +172,7 @@ func chacha_20_core_avx(out, in *byte, in_len uint64, state *[48]byte)
 // This function is implemented in chacha20_avx2_amd64.s
 //go:noescape
 func chacha_20_core_avx2(out, in *byte, in_len uint64, state *[48]byte)
+
+// This function is implemented in hchacha20_x64_amd64.s
+//go:noescape
+func hchacha_20_x64(key *[KeySize]byte, nonce *[hNonceSize]byte, out *[hChaChaSize]byte)
