@@ -138,8 +138,10 @@ func (s *stream) XORKeyStream(dst, src []byte) {
 		}
 
 		j := xor.Bytes(dst[i:limit], src[i:limit], s.block[s.offset:])
-		for o := s.offset; o < j; o++ {
-			s.block[o] = 0
+
+		b := s.block[s.offset:s.offset+j]
+		for o := range b {
+			b[o] = 0
 		}
 
 		s.offset += j

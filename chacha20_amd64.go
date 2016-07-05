@@ -102,8 +102,10 @@ func (s *stream) XORKeyStream(dst, src []byte) {
 
 	if len(s.buffer) != 0 {
 		i := xor.Bytes(dst, s.buffer, src)
-		for j := 0; j < i; j++ {
-			s.buffer[j] = 0
+
+		b := s.buffer[:i]
+		for j := range b {
+			b[j] = 0
 		}
 
 		s.buffer = s.buffer[i:]
@@ -144,8 +146,10 @@ func (s *stream) XORKeyStream(dst, src []byte) {
 		}
 
 		copy(dst[len(src)-todo:], s.backing[:todo])
-		for i := 0; i < todo; i++ {
-			s.backing[i] = 0
+
+		b := s.backing[:todo]
+		for i := range b {
+			b[i] = 0
 		}
 
 		s.buffer = s.backing[todo:]
