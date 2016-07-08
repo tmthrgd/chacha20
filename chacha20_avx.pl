@@ -193,7 +193,7 @@ ___
 
 
 my ($out, $in, $in_len, $key_ptr, $nr)
-   =("%rdi", "%rsi", "%rdx", "%rcx", "%r8");
+   =("%rdi", "%rsi", "%rdx", "%rbx", "%r8");
 
 if ($flavour =~ /^golang/) {
     $code.=<<___;
@@ -201,7 +201,7 @@ TEXT ·chacha_20_core_avx(SB),\$0-32
 	movq	out+0(FP), DI
 	movq	in+8(FP), SI
 	movq	in_len+16(FP), DX
-	movq	state+24(FP), CX
+	movq	state+24(FP), BX
 
 	movq	\$chacha20_consts<>(SB), R12
 	movq	\$rol8<>(SB), R13

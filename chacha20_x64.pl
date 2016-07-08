@@ -65,7 +65,7 @@ if ($flavour =~ /^golang/) {
 TEXT ·chacha_20_core_x64(SB),\$`512+64`-32
 	movq	out+0(FP), DX
 	movq	in+8(FP), SI
-	movq	in_len+16(FP), CX
+	movq	in_len+16(FP), BX
 	movq	state+24(FP), DI
 
 	movq	\$state-512(SP), R12
@@ -102,7 +102,7 @@ movdqa %xmm8, 0(%r12)
 movdqa %xmm9, 16(%r12)
 movdqa %xmm10, 32(%r12)
 movdqa %xmm11, 48(%r12)
-cmpq \$256, %rcx
+cmpq \$256, %rbx
 jb chacha_blocks_sse2_below256
 pshufd \$0x00, %xmm8, %xmm0
 pshufd \$0x55, %xmm8, %xmm1
@@ -494,8 +494,8 @@ movdqu %xmm0, 224(%rdx)
 movdqu %xmm4, 240(%rdx)
 addq \$256, %rsi
 addq \$256, %rdx
-subq \$256, %rcx
-cmp \$256, %rcx
+subq \$256, %rbx
+cmp \$256, %rbx
 jae chacha_blocks_sse2_atleast256
 movdqa 0(%r12), %xmm8
 movdqa 16(%r12), %xmm9
@@ -504,9 +504,9 @@ movdqa 48(%r12), %xmm11
 movq \$1, %r9
 chacha_blocks_sse2_below256:
 movq %r9, %xmm5
-andq %rcx, %rcx
+andq %rbx, %rbx
 jz chacha_blocks_sse2_done
-cmpq \$64, %rcx
+cmpq \$64, %rbx
 jb chacha_blocks_sse2_done
 chacha_blocks_sse2_above63:
 movdqa %xmm8, %xmm0
@@ -585,10 +585,10 @@ movdqu %xmm1, 16(%rdx)
 movdqu %xmm2, 32(%rdx)
 movdqu %xmm3, 48(%rdx)
 paddq %xmm5, %xmm11
-cmpq \$64, %rcx
+cmpq \$64, %rbx
 jbe chacha_blocks_sse2_done
 addq \$64, %rdx
-subq \$64, %rcx
+subq \$64, %rbx
 jmp chacha_blocks_sse2_below256
 chacha_blocks_sse2_done:
 movdqu %xmm11, 32(%rdi)

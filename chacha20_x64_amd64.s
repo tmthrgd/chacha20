@@ -11,7 +11,7 @@
 TEXT ·chacha_20_core_x64(SB),$576-32
 	MOVQ	out+0(FP),DX
 	MOVQ	in+8(FP),SI
-	MOVQ	in_len+16(FP),CX
+	MOVQ	in_len+16(FP),BX
 	MOVQ	state+24(FP),DI
 
 	MOVQ	$state-512(SP),R12
@@ -38,7 +38,7 @@ TEXT ·chacha_20_core_x64(SB),$576-32
 	BYTE $0x66; BYTE $0x45; BYTE $0x0f; BYTE $0x7f; BYTE $0x54; BYTE $0x24; BYTE $0x20
 	// MOVDQA	X11,48(R12)
 	BYTE $0x66; BYTE $0x45; BYTE $0x0f; BYTE $0x7f; BYTE $0x5c; BYTE $0x24; BYTE $0x30
-	CMPQ	CX,$256
+	CMPQ	BX,$256
 	JB	chacha_blocks_sse2_below256
 	PSHUFD	$0,X8,X0
 	PSHUFD	$85,X8,X1
@@ -690,8 +690,8 @@ chacha_blocks_sse2_mainloop1:
 	BYTE $0x00
 	ADDQ	$256,SI
 	ADDQ	$256,DX
-	SUBQ	$256,CX
-	CMPQ	CX,$256
+	SUBQ	$256,BX
+	CMPQ	BX,$256
 	JAE	chacha_blocks_sse2_atleast256
 	// MOVDQA	0(R12),X8
 	BYTE $0x66; BYTE $0x45; BYTE $0x0f; BYTE $0x6f; BYTE $0x04; BYTE $0x24
@@ -704,9 +704,9 @@ chacha_blocks_sse2_mainloop1:
 	MOVQ	$1,R9
 chacha_blocks_sse2_below256:
 	MOVQ	R9,X5
-	ANDQ	CX,CX
+	ANDQ	BX,BX
 	JZ	chacha_blocks_sse2_done
-	CMPQ	CX,$64
+	CMPQ	BX,$64
 	JB	chacha_blocks_sse2_done
 chacha_blocks_sse2_above63:
 	// MOVDQA	X8,X0
@@ -815,10 +815,10 @@ chacha_blocks_sse2_mainloop2:
 	// MOVDQU	X3,48(DX)
 	BYTE $0xf3; BYTE $0x0f; BYTE $0x7f; BYTE $0x5a; BYTE $0x30
 	PADDQ	X5,X11
-	CMPQ	CX,$64
+	CMPQ	BX,$64
 	JBE	chacha_blocks_sse2_done
 	ADDQ	$64,DX
-	SUBQ	$64,CX
+	SUBQ	$64,BX
 	JMP	chacha_blocks_sse2_below256
 chacha_blocks_sse2_done:
 	// MOVDQU	X11,32(DI)

@@ -78,7 +78,7 @@ ___
 }
 
 $code.=<<___;
-movq \$20, %rcx
+movq \$20, %rbx
 movq \$0x3320646e61707865, %rax
 movq \$0x6b20657479622d32, %r8
 movd %rax, %xmm0
@@ -113,7 +113,7 @@ movdqa %xmm1,%xmm4
 pslld \$7, %xmm1
 psrld \$25, %xmm4
 pxor %xmm4, %xmm1
-subq \$2, %rcx
+subq \$2, %rbx
 paddd %xmm1, %xmm0
 pxor %xmm0, %xmm3
 pshuflw \$0xb1,%xmm3,%xmm3
