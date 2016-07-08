@@ -2,7 +2,7 @@
 // Use of this source code is governed by an MIT
 // License that can be found in the LICENSE file.
 
-// Package chacha20 provides a pure Go implementation of ChaCha20, a fast,
+// Package ref provides a pure Go implementation of ChaCha20, a fast,
 // secure stream cipher.
 //
 // From Bernstein, Daniel J. "ChaCha, a variant of Salsa20." Workshop Record of
@@ -30,7 +30,7 @@ import (
 const (
 	// KeySize is the length of ChaCha20 keys, in bytes.
 	KeySize = 32
-	// NonceSize is the length of ChaCha20-RFC nonces, in bytes.
+	// RFCNonceSize is the length of ChaCha20-RFC nonces, in bytes.
 	RFCNonceSize = 12
 	// DraftNonceSize is the length of ChaCha20-draft nonces, in bytes.
 	DraftNonceSize = 8
