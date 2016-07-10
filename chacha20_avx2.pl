@@ -175,7 +175,7 @@ DATA rol8<>+0x18(SB)/1, \$11
 DATA rol8<>+0x19(SB)/1, \$8
 DATA rol8<>+0x1a(SB)/1, \$9
 DATA rol8<>+0x1b(SB)/1, \$10
-DATA rol8<>+0x1c(SB)/1, \$16
+DATA rol8<>+0x1c(SB)/1, \$15
 DATA rol8<>+0x1d(SB)/1, \$12
 DATA rol8<>+0x1e(SB)/1, \$13
 DATA rol8<>+0x1f(SB)/1, \$14

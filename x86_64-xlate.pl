@@ -393,7 +393,7 @@ my %globals;
 	if ($gas)	{ sprintf "%s%%%s",$self->{asterisk},$self->{value}; }
 	elsif ($golang) {
 	    my $value = $self->{value};
-	    if ($value =~ /^[xy]mm([0-9]+)$/) { sprintf "X%s",$1 }
+	    if ($value =~ /^([xy])mm([0-9]+)$/) { sprintf "%s%s",uc($1),$2 }
 	    elsif ($value =~ /^(?:[re]([abcd]x|[ds]i|[sb]p)|(r\d+)[bd]?|([abcd][lh]))$/g) { uc($1 or $2 or $3) }
 	    else { sprintf "%s%%%s",$self->{asterisk},$value; }
 	} else		{ $self->{value}; }

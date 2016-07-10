@@ -20,8 +20,7 @@ const (
 
 const useRef = false
 
-var useAVX, _ = hasAVX()
-var useAVX2 = false
+var useAVX, useAVX2 = hasAVX()
 
 // NewRFC creates and returns a new cipher.Stream. The key argument must be 256
 // bits long, and the nonce argument must be 96 bits long. The nonce must be
