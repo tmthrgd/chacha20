@@ -165,7 +165,7 @@ func (s *stream) XORKeyStream(dst, src []byte) {
 //go:noescape
 func hasAVX() (avx, avx2 bool)
 
-// This function is implemented in chacha20_avx_amd64.s
+// This function is implemented in chacha20_x64_amd64.s
 //go:noescape
 func chacha_20_core_x64(out, in *byte, in_len uint64, state *[48]byte)
 
