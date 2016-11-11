@@ -204,23 +204,24 @@ var xTestVectors = []testVector{
 
 func testChaCha20(t *testing.T, newChaCha20 func(key, nonce []byte) (cipher.Stream, error), vectors []testVector) {
 	for i, vector := range vectors {
-		t.Logf("Running test vector %d", i)
+		t.Run(fmt.Sprintf("vector%d", i), func(t *testing.T) {
+			c, err := newChaCha20(vector.key, vector.nonce)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		c, err := newChaCha20(vector.key, vector.nonce)
-		if err != nil {
-			t.Error(err)
-			continue
-		}
+			var block [64]byte
+			for i := uint64(0); i < vector.counter; i++ {
+				c.XORKeyStream(block[:], block[:])
+			}
 
-		var block [64]byte
-		for i := uint64(0); i < vector.counter; i++ {
-			c.XORKeyStream(block[:], block[:])
-		}
+			dst := make([]byte, len(vector.keyStream))
+			c.XORKeyStream(dst, dst)
 
-		dst := make([]byte, len(vector.keyStream))
-		c.XORKeyStream(dst, dst)
+			if bytes.Equal(vector.keyStream, dst) {
+				return
+			}
 
-		if !bytes.Equal(vector.keyStream, dst) {
 			t.Error("Bad keystream:")
 			t.Errorf("\texpected %x", vector.keyStream)
 			t.Errorf("\twas      %x", dst)
@@ -231,7 +232,7 @@ func testChaCha20(t *testing.T, newChaCha20 func(key, nonce []byte) (cipher.Stre
 					break
 				}
 			}
-		}
+		})
 	}
 }
 
