@@ -3,6 +3,9 @@
 [![GoDoc](https://godoc.org/github.com/tmthrgd/chacha20?status.svg)](https://godoc.org/github.com/tmthrgd/chacha20)
 [![Build Status](https://travis-ci.org/tmthrgd/chacha20.svg?branch=master)](https://travis-ci.org/tmthrgd/chacha20)
 
+**Deprecated**: This is a legacy implementation. New users should use
+[aead/chacha20](https://godoc.org/github.com/aead/chacha20) instead.
+
 An AVX/AVX2/x64/pure-Go implementation of the ChaCha20 stream cipher for Golang.
 
 The AVX and AVX2 ChaCha20 implementations were taken from
