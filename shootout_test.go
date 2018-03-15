@@ -10,6 +10,7 @@ import (
 	"crypto/rc4"
 	"testing"
 
+	aead "github.com/aead/chacha20"
 	codahale "github.com/codahale/chacha20"
 	ref "github.com/tmthrgd/chacha20/internal/ref"
 )
@@ -46,6 +47,18 @@ func BenchmarkChaCha20Codahale(b *testing.B) {
 			key := make([]byte, codahale.KeySize)
 			nonce := make([]byte, codahale.NonceSize)
 			c, _ := codahale.New(key, nonce)
+
+			benchmarkStream(b, c, size.l)
+		})
+	}
+}
+
+func BenchmarkChaCha20AEAD(b *testing.B) {
+	for _, size := range sizes {
+		b.Run(size.name, func(b *testing.B) {
+			key := make([]byte, KeySize)
+			nonce := make([]byte, RFCNonceSize)
+			c, _ := aead.NewCipher(nonce, key)
 
 			benchmarkStream(b, c, size.l)
 		})

@@ -16,6 +16,7 @@ The pure Go ChaCha20 implementation was taken from [codahale/chacha20](https://g
 
 ```
 BenchmarkChaCha20Codahale/1M-8	     200	   5951390 ns/op	 176.19 MB/s	[codahale/chacha20]
+BenchmarkChaCha20AEAD/1M-8    	    2000	    771361 ns/op	1359.38 MB/s	[aead/chacha20]
 BenchmarkChaCha20Go/1M-8      	     300	   5638541 ns/op	 185.97 MB/s	[tmthrgd/chacha20/internal/ref]
 BenchmarkChaCha20x64/1M-8     	    2000	    927749 ns/op	1130.24 MB/s	[tmthrgd/chacha20]
 BenchmarkChaCha20AVX/1M-8     	    2000	    730687 ns/op	1435.05 MB/s	[tmthrgd/chacha20]
